@@ -7,6 +7,19 @@
     android:id="@+id/linearLayout1"
     android:paddingRight="20dp"
     android:paddingLeft="20dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VKM"
+        android:layout_marginTop="80dp"
+        android:textSize="80sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:textColor="#fff"
+        android:shadowColor="#9c27b0"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="25" />
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -16,7 +29,7 @@
         android:inputType="textImeMultiLine"
         local:MvxBind="Text Username"
         android:id="@+id/editText1"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="50dp"
         android:hint="Your login" />
     <EditText
         android:layout_width="fill_parent"
