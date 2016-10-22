@@ -33,7 +33,7 @@ namespace VKM.Core.ViewModels
         }
         private void OnLoginButtonPressed()
         {
-
+            ShowViewModel<MainViewModel>();
         }
 
     }

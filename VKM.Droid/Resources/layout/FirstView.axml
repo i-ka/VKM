@@ -33,5 +33,6 @@
         android:layout_height="wrap_content"
         android:textSize="40dp"
         android:text="LOGIN"
+        local:MvxBind="Click LoginButtonCommand"
         android:layout_margin="10dp" />
 </LinearLayout>
