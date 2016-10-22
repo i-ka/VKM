@@ -99,8 +99,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\VKM.Core.csproj">
-      <Project>{308A9F29-87F1-402F-8500-1D1E20D130D8}</Project>
+    <ProjectReference Include="..\VKM.Core\VKM.Core.csproj">
+      <Project>{308a9f29-87f1-402f-8500-1d1e20d130d8}</Project>
       <Name>VKM.Core</Name>
     </ProjectReference>
   </ItemGroup>
