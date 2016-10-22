@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient"
     android:id="@+id/linearLayout1"
     android:paddingRight="20dp"
     android:paddingLeft="20dp">
@@ -23,23 +24,17 @@
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="40dp"
-        android:maxLines="1"
-        android:scrollHorizontally="true"
-        android:inputType="textImeMultiLine"
-        local:MvxBind="Text Username"
-        android:id="@+id/editText1"
         android:layout_marginTop="50dp"
+        local:MvxBind="Text Username"
+        style="@style/TextFieldStyle"
         android:hint="Your login" />
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="40dp"
-        android:maxLines="1"
-        android:scrollHorizontally="true"
+        android:layout_marginTop="10dp"
         android:inputType="textImeMultiLine|textPassword"
+        style="@style/TextFieldStyle"
         local:MvxBind="Text Password"
-        android:id="@+id/editText1"
         android:hint="Your pass" />
     <Button
         android:layout_width="fill_parent"
