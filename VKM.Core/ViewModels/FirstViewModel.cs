@@ -20,5 +20,21 @@ namespace VKM.Core.ViewModels
 }
         }
 
+        private MvxCommand _loginButtonCommand;
+        public MvxCommand LoginButtonCommand
+        {
+            get
+            {
+                if (_loginButtonCommand == null) {
+                    _loginButtonCommand = new MvxCommand(OnLoginButtonPressed);
+                }
+                return _loginButtonCommand;
+            }
+        }
+        private void OnLoginButtonPressed()
+        {
+
+        }
+
     }
 }
