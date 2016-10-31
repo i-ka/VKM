@@ -2,17 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
   <TextView
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:textSize="40dp"
-    android:text="this is main view"/>
-  <Mvx.MvxListView
+    android:textSize="30dp"
+    local:MvxBind="Text Name"
+    />
+  <TextView
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    local:MvxBind="ItemsSource AudioList"
-    local:MvxItemTemplate="@layout/item_audio" />
+    android:layout_height="wrap_content"
+    android:textSize="15dp"
+    local:MvxBind="Text Author"
+    />
 </LinearLayout>
