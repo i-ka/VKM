@@ -10,6 +10,18 @@
     android:layout_height="wrap_content"
     android:textSize="40dp"
     android:text="this is main view"/>
+  <Button
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="40dp"
+    android:text="play"
+    local:MvxBind="Click PlayButtonCommand" />
+  <Button
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="40dp"
+    android:text="set source"
+    local:MvxBind="Click SetSourceCommand" />
   <Mvx.MvxListView
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"

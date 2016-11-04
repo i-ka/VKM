@@ -10,6 +10,8 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using MvvmCross.Droid.Views;
+using VKM.Core.ViewModels;
+using VKM.Droid.Sevices;
 
 namespace VKM.Droid.Views
 {
@@ -21,6 +23,7 @@ namespace VKM.Droid.Views
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.MainView);
+            (ViewModel as MainViewModel).Payer = new AndroidAudioService();
         }
     }
 }
