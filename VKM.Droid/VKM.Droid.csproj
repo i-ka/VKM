@@ -101,6 +101,14 @@
     </AndroidResource>
     <None Include="ToDo-MvvmCross\_ Droid UI.txt" />
     <AndroidResource Include="Resources\drawable\button.axml" />
+    <AndroidResource Include="Resources\drawable\icon-back.png" />
+    <AndroidResource Include="Resources\drawable\icon-next.png" />
+    <AndroidResource Include="Resources\drawable\icon-pause.png" />
+    <AndroidResource Include="Resources\drawable\icon-play.png" />
+    <AndroidResource Include="Resources\drawable\icon-previous.png" />
+    <AndroidResource Include="Resources\drawable\icon-search.png" />
+    <AndroidResource Include="Resources\drawable\icon-settings.png" />
+    <AndroidResource Include="Resources\drawable\icon-stop.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
