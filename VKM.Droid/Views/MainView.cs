@@ -22,5 +22,10 @@ namespace VKM.Droid.Views
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.MainView);
         }
+		public override bool OnCreateOptionsMenu(IMenu menu)
+		{
+			MenuInflater.Inflate(Resource.Menu.ActionButtons, menu);
+			return base.OnCreateOptionsMenu(menu);
+		}
     }
 }

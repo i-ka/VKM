@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+		android:id="@+id/home"
+		android:icon="@mipmap/ic_action_home"
+        android:title="Мои аудиозаписи"
+        android:showAsAction="always" 
+		android:layout_gravity="left" 
+		android:orderInCategory="0" />
+	<item
+		android:id="@+id/search"
+		android:icon="@mipmap/ic_action_magnifier"
+		android:title="Поиск"
+		android:showAsAction="always" />
+	<item
+		android:id="@+id/settings"
+		android:icon="@mipmap/ic_action_settings_work_tool"
+		android:title="Настройки"
+		android:showAsAction="always" 
+		android:layout_gravity="right" />
+	
+</menu>

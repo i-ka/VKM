@@ -103,6 +103,19 @@
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\button.axml" />
     <None Include="ToDo-MvvmCross\_ Droid UI.txt" />
+    <AndroidResource Include="Resources\menu\ActionButtons.xml" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_action_home.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_action_magnifier.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_action_settings_work_tool.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_action_home.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_action_magnifier.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_action_settings_work_tool.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_action_home.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_action_magnifier.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_action_settings_work_tool.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_action_home.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_action_magnifier.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_action_settings_work_tool.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
