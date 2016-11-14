@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MvvmCross.Core.ViewModels;
 
 namespace VKM.Core.Services
 {
-    public class Audio
+    public class Audio : MvxViewModel
     {
         public Audio(string author, string name, int duration)
         {
@@ -18,6 +19,14 @@ namespace VKM.Core.Services
         public string Author { get; set; }
         public string Name { get; set; }
         public int Duration { get; set; }
-        public bool IsPlaying { get; set; }
+        private bool _isPlaying;
+        public bool IsPlaying {
+            get { return _isPlaying; }
+            set
+            {
+                _isPlaying = value;
+                RaisePropertyChanged(() => IsPlaying);
+            }
+        }
     }
 }
