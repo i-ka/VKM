@@ -4,11 +4,12 @@
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_play_button" 
-        android:layout_gravity="center_vertical"/>
+  <VKM.Droid.Controls.PlayStopButton
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@mipmap/ic_play_button" 
+      android:layout_gravity="center_vertical"
+      local:MvxBind="IsPlaying IsPlaying"/>
 	<LinearLayout
 	    android:orientation="vertical"
 	    android:layout_width="wrap_content"
