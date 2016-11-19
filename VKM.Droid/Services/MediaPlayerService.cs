@@ -156,7 +156,7 @@ namespace VKM.Droid.Services
                     break;
                 case ActionStop:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
-                        Pause();
+                        Stop();
                     }
                     else {
                         _mediaController.GetTransportControls().Stop();
@@ -165,7 +165,7 @@ namespace VKM.Droid.Services
                     break;
                 case ActionPrev:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
-                        Pause();
+                        Prev();
                     }
                     else {
                         _mediaController.GetTransportControls().SkipToPrevious();
@@ -174,7 +174,7 @@ namespace VKM.Droid.Services
                     break;
                 case ActionNext:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
-                        Pause();
+                        Next();
                     }
                     else {
                         _mediaController.GetTransportControls().SkipToNext();
