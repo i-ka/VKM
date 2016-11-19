@@ -4,6 +4,30 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+  <Button
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="30dp"
+    local:MvxBind="Click PlayCommand"
+    android:text="Play"/>
+  <Button
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="30dp"
+    local:MvxBind="Click PauseCommand"
+    android:text="Pause"/>
+  <Button
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="30dp"
+    local:MvxBind="Click NextCommand"
+    android:text="Next"/>
+  <Button
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="30dp"
+    local:MvxBind="Click PrevCommand"
+    android:text="Prev"/>
   <Mvx.MvxListView
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
