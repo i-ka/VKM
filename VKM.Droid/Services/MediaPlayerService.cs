@@ -39,20 +39,21 @@ namespace VKM.Droid.Services
         public override void OnCreate()
         {
             _playlist = new List<string>();
-            _playlist.Add("https://cs3-1v4.vk-cdn.net/p5/52ff50adea30f0.mp3?extra=IEyeNVgMrnphnubugqW1o5Tf_XoCpbfHNnG_iwFKckboywrmU8cA4pawHsUEfHWD0Y1qUYwrUpjaIg3Vxi76gxGm9lUliczWd9DuC6nHpgH-8sAs-JgQTUYG7tvMjgQy_3aCQME7SmZ23A");
-            _playlist.Add("https://cs3-2v4.vk-cdn.net/p2/04e73541653a5d.mp3?extra=DxXp9-mfZVKhuPqgL147RPA1vt2fCl-UYyJYOXm1gbWjijBU4qyI6eINWuuzMhiKwwyIGNbuqz-NgT10oimiSg_CLR9jLjuq02VULqQuNLvq8LiGHkEAwEwOUXwAjBdloywaYxBovwR8");
-            _playlist.Add("https://cs3-2v4.vk-cdn.net/p14/7179b3a233c866.mp3?extra=cxokbp1MCnCSpeyBoN6jTVArqjMNkuKInePWkkFAnQhG8ISyOGX4EqR93_yxcirgjYOQBR0VOqKbbBM0IcAJnQ18OU9xLlbAiQIAs4FkY_aWN1h6QpOeW8qNKQ7oDSaM1fUOMfKsb0U");
+            _playlist.Add("http://cs3-2v4.vk-cdn.net/p24/3ba64a2a4d3cb1.mp3");
             _player = new MediaPlayer();
-            _mediaSession = new MediaSession(Application.Context, "VKM player");
-            _mediaController = new MediaController(Application.Context, _mediaSession.SessionToken);
-            var callback = new VkmMediaSessionCallBack();
-            callback.OnPlayImpl = Play;
-            callback.OnPauseImpl = Pause;
-            callback.OnSkipToNextImpl = Next;
-            callback.OnSkipToPreviousImpl = Prev;
-            callback.OnSeekToImpl = Seek;
-            callback.OnStopImpl = Stop;
-            _mediaSession.SetCallback(callback);
+            int version = (int) Build.VERSION.SdkInt;
+            if (!(Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat)) {
+                _mediaSession = new MediaSession(Application.Context, "VKM player");
+                _mediaController = new MediaController(Application.Context, _mediaSession.SessionToken);
+                var callback = new VkmMediaSessionCallBack();
+                callback.OnPlayImpl = Play;
+                callback.OnPauseImpl = Pause;
+                callback.OnSkipToNextImpl = Next;
+                callback.OnSkipToPreviousImpl = Prev;
+                callback.OnSeekToImpl = Seek;
+                callback.OnStopImpl = Stop;
+                _mediaSession.SetCallback(callback);
+            }
         }
 
         private void Pause()
@@ -69,16 +70,16 @@ namespace VKM.Droid.Services
                 _player.SetAudioStreamType(Stream.Music);
                 _player.SetDataSource(_playlist[_currentSourceIdx]);
                 _player.PrepareAsync();
-                _player.Prepared += (sender, e) => _player.Start();
-                _state = VkmPlaybackState.Playing;
+                _player.Prepared += (sender, e) => {
+                    _player.Start();
+                    _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
+                    AquireWifiLock();
+                    _state = VkmPlaybackState.Playing;
+                };
+                _player.Completion += (sender, e) => Next();
             } else if (_state == VkmPlaybackState.Paused) {
                 _player.Start();
                 _state = VkmPlaybackState.Playing;
-            }
-
-            if (_state == VkmPlaybackState.Playing) {
-                _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
-                AquireWifiLock();
             }
         }
 
@@ -135,23 +136,46 @@ namespace VKM.Droid.Services
         {
             switch (intent.Action) {
                 case ActionPlay:
-                    _mediaController.GetTransportControls().Play();
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
+                        Play();
+                    } else {
+                       _mediaController.GetTransportControls().Play();
+                    }
                     //Play();
                     break;
                 case ActionPause:
-                    _mediaController.GetTransportControls().Pause();
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
+                        Pause();
+                    } else {
+                        _mediaController.GetTransportControls().Pause();
+                    }
                     //Pause();
                     break;
                 case ActionStop:
-                    _mediaController.GetTransportControls().Stop();
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
+                        Pause();
+                    }
+                    else {
+                        _mediaController.GetTransportControls().Stop();
+                    }
                     //Stop();
                     break;
                 case ActionPrev:
-                    _mediaController.GetTransportControls().SkipToPrevious();
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
+                        Pause();
+                    }
+                    else {
+                        _mediaController.GetTransportControls().SkipToPrevious();
+                    }
                     //Prev();
                     break;
                 case ActionNext:
-                    _mediaController.GetTransportControls().SkipToNext();
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
+                        Pause();
+                    }
+                    else {
+                        _mediaController.GetTransportControls().SkipToNext();
+                    }
                     //Next();
                     break;
                 case ActionSetPlayList:
