@@ -9,16 +9,61 @@ namespace VKM.Core.Services
 {
     public class Audio : MvxViewModel
     {
-        public Audio(string author, string name, int duration)
+        private AudioInfo _audioInfo = new AudioInfo();
+        public Audio(string author, string name, int duration, string source = "")
         {
             Author = author;
             Name = name;
             Duration = duration;
+            Source = source;
             IsPlaying = false;
         }
-        public string Author { get; set; }
-        public string Name { get; set; }
-        public int Duration { get; set; }
+        public AudioInfo AudioInfo { get { return _audioInfo; } }
+
+        public string Source {
+            get
+            {
+               return _audioInfo.source;
+            }
+            private set
+            {
+                _audioInfo.source = value;
+                RaisePropertyChanged(() => Source);
+            }
+        }
+        public string Author {
+            get
+            {
+                return _audioInfo.author;
+            }
+            private set
+            {
+                _audioInfo.source = value;
+                RaisePropertyChanged(() => Author);
+            }
+        }
+        public string Name {
+            get
+            {
+                return _audioInfo.name;
+            }
+            set
+            {
+                _audioInfo.name = value;
+                RaisePropertyChanged(() => Name);
+            }
+        }
+        public int Duration {
+            get
+            {
+                return _audioInfo.duration;
+            }
+            private set
+            {
+                _audioInfo.duration = value;
+                RaisePropertyChanged(() => Duration);
+            }
+        }
         private bool _isPlaying;
         public bool IsPlaying {
             get { return _isPlaying; }
@@ -28,6 +73,5 @@ namespace VKM.Core.Services
                 RaisePropertyChanged(() => IsPlaying);
             }
         }
-        public string Source { get; set; }
     }
 }
