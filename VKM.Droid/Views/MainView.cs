@@ -12,6 +12,9 @@ using Android.Views;
 using Android.Widget;
 using MvvmCross.Droid.Views;
 
+using VKM.Core.ViewModels;
+using VKM.Droid.Services;
+
 namespace VKM.Droid.Views
 {
     [Activity(Label = "Main view",
@@ -22,6 +25,7 @@ namespace VKM.Droid.Views
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.MainView);
+            (ViewModel as MainViewModel).SetPlayerService(new DroidPlayerService());
         }
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
