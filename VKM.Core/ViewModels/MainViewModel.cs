@@ -13,9 +13,10 @@ namespace VKM.Core.ViewModels
         MvxViewModel
     {
         private IPlayerService _playerService;
-        public MainViewModel(IVkAudioService service)
+        public MainViewModel(IVkAudioService service, IPlayerService plService)
         {
             AudioList = service.GetAudioList();
+            _playerService = plService;
         }
         private List<Audio> _audioList;
         public List<Audio> AudioList
@@ -55,11 +56,6 @@ namespace VKM.Core.ViewModels
         public MvxCommand PrevCommand
         {
             get { return new MvxCommand(() => _playerService.Prev()); }
-        }
-
-        public void SetPlayerService(IPlayerService playerService)
-        {
-            _playerService = playerService;
         }
 
         private void OnOptionsButtonClicked()

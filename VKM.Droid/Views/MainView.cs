@@ -25,7 +25,6 @@ namespace VKM.Droid.Views
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.MainView);
-            (ViewModel as MainViewModel).SetPlayerService(new DroidPlayerService());
         }
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
