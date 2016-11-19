@@ -32,7 +32,7 @@ namespace VKM.Droid.Services
         public const string CurrentIndexValueName = "INDEX";
 
         private MediaPlayer _player;
-        private List<string> _playlist;
+        private List<AudioInfo> _playlist;
         private VkmPlaybackState _state = VkmPlaybackState.Stoped; //PlaybackState.NoMedia
         private int _currentSourceIdx = 0;
         private WifiManager.WifiLock _wifiLock;
@@ -42,8 +42,7 @@ namespace VKM.Droid.Services
 
         public override void OnCreate()
         {
-            _playlist = new List<string>();
-            _playlist.Add("http://cs3-2v4.vk-cdn.net/p24/3ba64a2a4d3cb1.mp3");
+            _playlist = new List<AudioInfo>();
             _player = new MediaPlayer();
             int version = (int) Build.VERSION.SdkInt;
             if (!(Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat)) {
@@ -72,7 +71,7 @@ namespace VKM.Droid.Services
         {
             if (_state == VkmPlaybackState.Stoped) {
                 _player.SetAudioStreamType(Stream.Music);
-                _player.SetDataSource(_playlist[_currentSourceIdx]);
+                _player.SetDataSource(_playlist[_currentSourceIdx].source);
                 _player.PrepareAsync();
                 _player.Prepared += (sender, e) => {
                     _player.Start();
@@ -183,7 +182,7 @@ namespace VKM.Droid.Services
                     //Next();
                     break;
                 case ActionSetPlayList:
-                    _playlist = (List<string>)intent.GetStringArrayListExtra(PlaylistValueName);
+                    _playlist = intent.GetStringArrayListExtra(PlaylistValueName).Select(x => AudioInfo.UnPack(x)).ToList();
                     break;
                 case ActionSetCurrent:
                     Stop();

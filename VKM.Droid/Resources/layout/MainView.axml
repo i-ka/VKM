@@ -31,6 +31,6 @@
   <Mvx.MvxListView
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    local:MvxBind="ItemsSource AudioList"
-    local:MvxItemTemplate="@layout/item_audio" />
+    local:MvxBind="ItemsSource AudioList; ItemClick SelectAudio"
+    local:MvxItemTemplate="@layout/item_audio"/>
 </LinearLayout>

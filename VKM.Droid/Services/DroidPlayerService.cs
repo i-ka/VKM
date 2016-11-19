@@ -49,7 +49,7 @@ namespace VKM.Droid.Services
         {
             var intent = new Intent(Application.Context, typeof(MediaPlayerService));
             intent.SetAction(MediaPlayerService.ActionSetPlayList);
-            intent.PutStringArrayListExtra(MediaPlayerService.PlaylistValueName, playList.Select(x => x.Source).ToList());
+            intent.PutStringArrayListExtra(MediaPlayerService.PlaylistValueName, playList.Select(x => x.AudioInfo.Pack()).ToList());
             Application.Context.StartService(intent);
         }
 

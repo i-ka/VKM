@@ -38,7 +38,7 @@ namespace VKM.Core.Services
             }
             private set
             {
-                _audioInfo.source = value;
+                _audioInfo.author = value;
                 RaisePropertyChanged(() => Author);
             }
         }
