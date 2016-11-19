@@ -40,6 +40,23 @@ namespace VKM.Core.ViewModels
             }
         }
 
+        public MvxCommand PlayCommand
+        {
+            get { return new MvxCommand(() => _playerService.Start()); }
+        }
+        public MvxCommand PauseCommand
+        {
+            get { return new MvxCommand(() => _playerService.Pause()); }
+        }
+        public MvxCommand NextCommand
+        {
+            get { return new MvxCommand(() => _playerService.Next()); }
+        }
+        public MvxCommand PrevCommand
+        {
+            get { return new MvxCommand(() => _playerService.Prev()); }
+        }
+
         public void SetPlayerService(IPlayerService playerService)
         {
             _playerService = playerService;
