@@ -18,7 +18,10 @@ namespace VKM.Droid.Services
     {
         public void Goto(int idx)
         {
-            throw new NotImplementedException();
+            var intent = new Intent(Application.Context, typeof(MediaPlayerService));
+            intent.SetAction(MediaPlayerService.ActionSetCurrent);
+            intent.PutExtra(MediaPlayerService.CurrentIndexValueName, idx);
+            Application.Context.StartService(intent);
         }
 
         public void Next()
@@ -44,8 +47,9 @@ namespace VKM.Droid.Services
 
         public void SetPlayList(List<Audio> playList)
         {
-            var intent = new Intent(MediaPlayerService.ActionPause);
-            intent.PutStringArrayListExtra("PLAY_LIST", playList.Select(x => x.Source).ToList());
+            var intent = new Intent(Application.Context, typeof(MediaPlayerService));
+            intent.SetAction(MediaPlayerService.ActionSetPlayList);
+            intent.PutStringArrayListExtra(MediaPlayerService.PlaylistValueName, playList.Select(x => x.Source).ToList());
             Application.Context.StartService(intent);
         }
 

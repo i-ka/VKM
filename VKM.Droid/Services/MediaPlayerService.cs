@@ -26,6 +26,10 @@ namespace VKM.Droid.Services
         public const string ActionNext = "com.vkm.player.action.next";
         public const string ActionPrev = "com.vkm.player.action.prev";
         public const string ActionSetPlayList = "com.vkm.player.action.setplaylist";
+        public const string ActionSetCurrent = "com.vkm.player.action.setcurrent";
+
+        public const string PlaylistValueName = "PLAY_LIST";
+        public const string CurrentIndexValueName = "INDEX";
 
         private MediaPlayer _player;
         private List<string> _playlist;
@@ -179,7 +183,12 @@ namespace VKM.Droid.Services
                     //Next();
                     break;
                 case ActionSetPlayList:
-                    _playlist = (List<string>)intent.GetStringArrayListExtra("PLAY_LIST");
+                    _playlist = (List<string>)intent.GetStringArrayListExtra(PlaylistValueName);
+                    break;
+                case ActionSetCurrent:
+                    Stop();
+                    _currentSourceIdx = intent.GetIntExtra(CurrentIndexValueName, 0);
+                    Play();
                     break;
             }
             return StartCommandResult.Sticky;
