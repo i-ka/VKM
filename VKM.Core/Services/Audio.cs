@@ -28,5 +28,6 @@ namespace VKM.Core.Services
                 RaisePropertyChanged(() => IsPlaying);
             }
         }
+        public string Source { get; set; }
     }
 }
