@@ -9,7 +9,7 @@ using VKM.Core.Services;
 
 namespace VKM.Core.ViewModels
 {
-    class MainViewModel :
+    public class MainViewModel :
         MvxViewModel
     {
         public MainViewModel(IVkAudioService service)
