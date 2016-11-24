@@ -17,24 +17,25 @@ using VKM.Core.Services;
 namespace VKM.Droid.Services
 {
     [Service]
-    [IntentFilter(new[] { ActionPlay, ActionPause, ActionStop, ActionNext, ActionPrev, ActionSetPlayList })]
-    class MediaPlayerService : Service
+    [IntentFilter(new[] { ActionPlay, ActionPause, ActionStop, ActionNext, ActionPrev, ActionSetSource })]
+    public class MediaPlayerService : Service
     {
         public const string ActionPlay = "com.vkm.player.action.play";
         public const string ActionPause = "com.vkm.player.action.pause";
         public const string ActionStop = "com.vkm.player.action.stop";
         public const string ActionNext = "com.vkm.player.action.next";
         public const string ActionPrev = "com.vkm.player.action.prev";
-        public const string ActionSetPlayList = "com.vkm.player.action.setplaylist";
-        public const string ActionSetCurrent = "com.vkm.player.action.setcurrent";
+        public const string ActionSetSource = "com.vkm.player.action.setsource";
 
-        public const string PlaylistValueName = "PLAY_LIST";
-        public const string CurrentIndexValueName = "INDEX";
+        public const string SourceValueName = "SOURCE";
+
+        public static MediaPlayerService instance;
+        public VkmPlaybackState Status { get { return _state; } }
 
         private MediaPlayer _player;
-        private List<AudioInfo> _playlist;
+        private AudioInfo _currentAudio;
         private VkmPlaybackState _state = VkmPlaybackState.Stoped; //PlaybackState.NoMedia
-        private int _currentSourceIdx = 0;
+        
         private WifiManager.WifiLock _wifiLock;
 
         private MediaSession _mediaSession;
@@ -42,7 +43,7 @@ namespace VKM.Droid.Services
 
         public override void OnCreate()
         {
-            _playlist = new List<AudioInfo>();
+            instance = this;
             _player = new MediaPlayer();
             int version = (int) Build.VERSION.SdkInt;
             if (!(Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat)) {
@@ -71,8 +72,9 @@ namespace VKM.Droid.Services
         {
             if (_state == VkmPlaybackState.Stoped) {
                 _player.SetAudioStreamType(Stream.Music);
-                _player.SetDataSource(_playlist[_currentSourceIdx].source);
+                _player.SetDataSource(_currentAudio.source);
                 _player.PrepareAsync();
+                _state = VkmPlaybackState.Preparing;
                 _player.Prepared += (sender, e) => {
                     _player.Start();
                     _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
@@ -100,33 +102,20 @@ namespace VKM.Droid.Services
                 _player.Reset();
                 ReleaseWifiLock();
                 _state = VkmPlaybackState.Stoped;
+            } else if (_state == VkmPlaybackState.Preparing) {
+                _player.Reset();
+                _state = VkmPlaybackState.Stoped;
             }
         }
 
         private void Next()
         {
-            var prSt = _state;
-            Stop();
-            _currentSourceIdx++;
-            if (_currentSourceIdx >= _playlist.Count) {
-                _currentSourceIdx = 0;
-            }
-            if (prSt == VkmPlaybackState.Playing) {
-                Play();
-            }
+            
         }
 
         private void Prev()
         {
-            var prSt = _state;
-            Stop();
-            _currentSourceIdx--;
-            if (_currentSourceIdx < 0) {
-                _currentSourceIdx = _playlist.Count-1;
-            }
-            if (prSt == VkmPlaybackState.Playing) {
-                Play();
-            }
+            
         }
 
         public override IBinder OnBind(Intent intent)
@@ -141,18 +130,18 @@ namespace VKM.Droid.Services
                 case ActionPlay:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
                         Play();
-                    } else {
-                       _mediaController.GetTransportControls().Play();
                     }
-                    //Play();
+                    else {
+                        _mediaController.GetTransportControls().Play();
+                    }
                     break;
                 case ActionPause:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
                         Pause();
-                    } else {
+                    }
+                    else {
                         _mediaController.GetTransportControls().Pause();
                     }
-                    //Pause();
                     break;
                 case ActionStop:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
@@ -161,7 +150,6 @@ namespace VKM.Droid.Services
                     else {
                         _mediaController.GetTransportControls().Stop();
                     }
-                    //Stop();
                     break;
                 case ActionPrev:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
@@ -170,7 +158,6 @@ namespace VKM.Droid.Services
                     else {
                         _mediaController.GetTransportControls().SkipToPrevious();
                     }
-                    //Prev();
                     break;
                 case ActionNext:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
@@ -179,16 +166,10 @@ namespace VKM.Droid.Services
                     else {
                         _mediaController.GetTransportControls().SkipToNext();
                     }
-                    //Next();
                     break;
-                case ActionSetPlayList:
-                    _playlist = intent.GetStringArrayListExtra(PlaylistValueName).Select(x => AudioInfo.UnPack(x)).ToList();
-                    break;
-                case ActionSetCurrent:
-                    Stop();
-                    _currentSourceIdx = intent.GetIntExtra(CurrentIndexValueName, 0);
-                    Play();
-                    break;
+               case ActionSetSource:
+                   _currentAudio = AudioInfo.UnPack(intent.GetStringExtra(SourceValueName));
+                   break;
             }
             return StartCommandResult.Sticky;
         }

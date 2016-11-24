@@ -16,19 +16,15 @@ namespace VKM.Droid.Services
     class DroidPlayerService : IPlayerService
 
     {
-        public void Goto(int idx)
+        public VkmPlaybackState Status
         {
-            var intent = new Intent(Application.Context, typeof(MediaPlayerService));
-            intent.SetAction(MediaPlayerService.ActionSetCurrent);
-            intent.PutExtra(MediaPlayerService.CurrentIndexValueName, idx);
-            Application.Context.StartService(intent);
-        }
-
-        public void Next()
-        {
-            var intent = new Intent(Application.Context, typeof(MediaPlayerService));
-            intent.SetAction(MediaPlayerService.ActionNext);
-            Application.Context.StartService(intent);
+            get
+            {
+                if (MediaPlayerService.instance != null) {
+                    return MediaPlayerService.instance.Status;
+                }
+                return VkmPlaybackState.NoMedia;
+            }
         }
 
         public void Pause()
@@ -38,24 +34,12 @@ namespace VKM.Droid.Services
             Application.Context.StartService(intent);
         }
 
-        public void Prev()
+        public void SetSource(Audio audio)
         {
             var intent = new Intent(Application.Context, typeof(MediaPlayerService));
-            intent.SetAction(MediaPlayerService.ActionPrev);
+            intent.SetAction(MediaPlayerService.ActionSetSource);
+            intent.PutExtra(MediaPlayerService.SourceValueName, audio.AudioInfo.Pack());
             Application.Context.StartService(intent);
-        }
-
-        public void SetPlayList(List<Audio> playList)
-        {
-            var intent = new Intent(Application.Context, typeof(MediaPlayerService));
-            intent.SetAction(MediaPlayerService.ActionSetPlayList);
-            intent.PutStringArrayListExtra(MediaPlayerService.PlaylistValueName, playList.Select(x => x.AudioInfo.Pack()).ToList());
-            Application.Context.StartService(intent);
-        }
-
-        public void SetSource(string newSource)
-        {
-            throw new NotImplementedException();
         }
 
         public void Start()

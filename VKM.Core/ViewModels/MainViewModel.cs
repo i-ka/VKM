@@ -25,8 +25,27 @@ namespace VKM.Core.ViewModels
             set
             {
                 _audioList = value;
-                _playerService.SetPlayList(_audioList);
+                CurrentAudio = _audioList.First();
                 RaisePropertyChanged(() => AudioList);
+            }
+        }
+
+        private Audio _currentAudio;
+        public Audio CurrentAudio
+        {
+            get { return _currentAudio; }
+            private set
+            {
+                if (_currentAudio == value) {
+                    return;
+                }
+                if (_currentAudio != null) {
+                    _currentAudio.IsPlaying = false;
+                }
+                _currentAudio = value;
+                StopPlayer();
+                _playerService.SetSource(_currentAudio);
+                RaisePropertyChanged(() => CurrentAudio);
             }
         }
 
@@ -43,24 +62,97 @@ namespace VKM.Core.ViewModels
         }
         public MvxCommand<Audio> SelectAudio
         {
-            get { return new MvxCommand<Audio>((audio) => _playerService.Goto(_audioList.IndexOf(audio))); }
+            get {
+                return new MvxCommand<Audio>((audio) => {
+                    if (CurrentAudio == audio) {
+                        if (CurrentAudio.IsPlaying) {
+                            PausePlayer();
+                        } else {
+                            StartPlayer();
+                        }
+                        CurrentAudio.IsPlaying = !CurrentAudio.IsPlaying;
+                        return;
+                    }
+                    CurrentAudio = audio;
+                    CurrentAudio.IsPlaying = true;
+                    StartPlayer();
+                });
+            }
         }
 
         public MvxCommand PlayCommand
         {
-            get { return new MvxCommand(() => _playerService.Start()); }
+            get {
+                return new MvxCommand(() => {
+                    if (CurrentAudio == null) {
+                        CurrentAudio = _audioList[0];
+                    }
+                    CurrentAudio.IsPlaying = true;
+                    StartPlayer();
+                });
+            }
         }
         public MvxCommand PauseCommand
         {
-            get { return new MvxCommand(() => _playerService.Pause()); }
+            get {
+                return new MvxCommand(() => {
+                    CurrentAudio.IsPlaying = false;
+                    PausePlayer();
+                });
+            }
         }
         public MvxCommand NextCommand
         {
-            get { return new MvxCommand(() => _playerService.Next()); }
+            get {
+                return new MvxCommand(() => {
+                    VkmPlaybackState prState = _playerService.Status;
+                    int newidx = _audioList.IndexOf(CurrentAudio) + 1;
+                    if (newidx >= _audioList.Count) {
+                        newidx = 0;
+                    }
+                    CurrentAudio = _audioList[newidx];
+                    if (prState == VkmPlaybackState.Playing || prState == VkmPlaybackState.Preparing) {
+                        StartPlayer();
+                        CurrentAudio.IsPlaying = true;
+                    }
+                });
+            }
         }
         public MvxCommand PrevCommand
         {
-            get { return new MvxCommand(() => _playerService.Prev()); }
+            get {
+                return new MvxCommand(() => {
+                    VkmPlaybackState prState = _playerService.Status;
+                    int newidx = _audioList.IndexOf(CurrentAudio) - 1;
+                    if (newidx < 0) {
+                        newidx = _audioList.Count - 1;
+                    }
+                    CurrentAudio = _audioList[newidx];
+                    if (prState == VkmPlaybackState.Playing || prState == VkmPlaybackState.Preparing) {
+                        StartPlayer();
+                        CurrentAudio.IsPlaying = true;
+                    }
+                });
+            }
+        }
+
+        private void StopPlayer()
+        {
+            if (_playerService.Status != VkmPlaybackState.NoMedia) {
+                _playerService.Stop();
+            }
+        }
+
+        private void StartPlayer()
+        {
+            _playerService.Start();
+        }
+
+        private void PausePlayer()
+        {
+            if (_playerService.Status != VkmPlaybackState.NoMedia) {
+                _playerService.Pause();
+            }
         }
 
         private void OnOptionsButtonClicked()

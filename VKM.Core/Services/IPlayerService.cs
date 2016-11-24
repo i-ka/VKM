@@ -11,17 +11,15 @@ namespace VKM.Core.Services
         Stoped,
         Paused,
         EndOfPlayback,
+        Preparing,
         NoMedia
     }
     public interface IPlayerService
     {
+        VkmPlaybackState Status{ get; }
         void Start();
         void Stop();
-        void SetPlayList(List<Audio> playList);
-        void SetSource(string newSource);
-        void Next();
-        void Prev();
-        void Goto(int idx);
+        void SetSource(Audio audio);
         void Pause();
     }
 }
