@@ -21,16 +21,28 @@ namespace VKM.Droid.Views
         Theme = "@android:style/Theme.Holo")]
     class MainView : MvxActivity
     {
+        MediaPlayerService player;
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.MainView);
+            MediaPlayerService.OnInstanceCreated += SetupPlayer;
         }
+
+        void SetupPlayer(MediaPlayerService instance)
+        {
+            player = instance;
+            player.OnCompletion += () => (ViewModel as MainViewModel).NextCommand.Execute();
+            player.PlaybackPositionChanged += OnPlayerPositionChanged;
+        }
+
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.ActionButtons, menu);
             return base.OnCreateOptionsMenu(menu);
         }
+
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             switch (item.ItemId)
@@ -41,6 +53,11 @@ namespace VKM.Droid.Views
             default:
                 return base.OnOptionsItemSelected(item);
             }
+        }
+
+        void OnPlayerPositionChanged(long pos)
+        {
+            Console.WriteLine("Current position: " + pos.ToString());
         }
     }
 }

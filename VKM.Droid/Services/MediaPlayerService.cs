@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 using Android.App;
 using Android.Content;
@@ -41,11 +42,22 @@ namespace VKM.Droid.Services
         private MediaSession _mediaSession;
         private MediaController _mediaController;
 
+        private Thread _playbackPosThread;
+
+        public delegate void OnInstanceListener(MediaPlayerService instance);
+        public delegate void CompletionListener();
+        public delegate void PlaybackPositionListener(long currentPos);
+
+        public static event OnInstanceListener OnInstanceCreated;
+        public event CompletionListener OnCompletion;
+        public event PlaybackPositionListener PlaybackPositionChanged;
+
         public override void OnCreate()
         {
             instance = this;
+            OnInstanceCreated(this);
             _player = new MediaPlayer();
-            int version = (int) Build.VERSION.SdkInt;
+            //int version = (int) Build.VERSION.SdkInt;
             if (!(Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat)) {
                 _mediaSession = new MediaSession(Application.Context, "VKM player");
                 _mediaController = new MediaController(Application.Context, _mediaSession.SessionToken);
@@ -76,12 +88,13 @@ namespace VKM.Droid.Services
                 _player.PrepareAsync();
                 _state = VkmPlaybackState.Preparing;
                 _player.Prepared += (sender, e) => {
+                    SetupPlaybackPosThread();
                     _player.Start();
                     _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
                     AquireWifiLock();
                     _state = VkmPlaybackState.Playing;
                 };
-                _player.Completion += (sender, e) => Next();
+                _player.Completion += (sender, e) => OnCompletion(); //(sender, e) => Next();
             } else if (_state == VkmPlaybackState.Paused) {
                 _player.Start();
                 _state = VkmPlaybackState.Playing;
@@ -92,6 +105,30 @@ namespace VKM.Droid.Services
         {
             if (_state == VkmPlaybackState.Paused || _state == VkmPlaybackState.Playing) {
                 _player.SeekTo((int)msPos);
+            }
+        }
+
+        private void SetupPlaybackPosThread()
+        {
+            if (_playbackPosThread == null)
+            {
+                _playbackPosThread = new Thread(CheckPlaybackPos);
+            }
+            if (_playbackPosThread.ThreadState == ThreadState.Stopped ||
+                _playbackPosThread.ThreadState == ThreadState.Unstarted)
+            {
+                _playbackPosThread.Start();
+            }
+        }
+
+        private void CheckPlaybackPos()
+        {
+            Console.WriteLine("Stert checking playback position");
+            while (true)
+            {
+                if (_state != VkmPlaybackState.Playing) continue;
+                PlaybackPositionChanged(_player.CurrentPosition);
+                Thread.Sleep(100);
             }
         }
 
