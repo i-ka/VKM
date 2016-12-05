@@ -11,9 +11,9 @@ namespace VKM.Core.Services
         public List<Audio> GetAudioList()
         {
             var newList = new List<Audio>();
-            newList.Add(new Audio("Royal Republic", "Tommy-Gun", 240, "https://cs3-2v4.vk-cdn.net/p24/3d4a7e8b83b5f6.mp3?extra=YU0H6Wk7hf-sGedNQQrNrRb7X09kN9O3OTP5tZ4B2e0fycf2MhW-qAoRKYceptqPICVKS41-kLpY90-z23ZaXyiFz9zZahCz1KJgO2abpOKRpUOuDD3QZMesvelvOcYYb0zeLtAEIVCaXAw"));
-            newList.Add(new Audio("Royal Republic", "Addictive", 300, "https://cs3-3v4.vk-cdn.net/p1/73684f4c48454e.mp3?extra=m1wHunwIay1PwD-ddGVQRX9_KH8quA9AA5-gbHAWWLF3b9Aav28ioebDSfry1GYb24_X7o8Zi3gBib_1uPm3OU6bSFgtlgF6hLNgblonp45yB9uWjyTtyo3FqQc898gURDyZ6XA9vYbB"));
-            newList.Add(new Audio("Royal Republic", "Underwear", 300, "https://cs3-2v4.vk-cdn.net/p18/8cc0a546ff7c82.mp3?extra=ugF1cYdYuooTTSRX_4CJUYJNoqUP2gj4eQgpRwQbV6NuoafAKNBiAxj5epySn0iZvntKUjeOh0mLhDaAfsomNCewiHNbyDEZokHFo8v5Xotv-PXhxwaez6GBcSnKWv8guvKDt-C2ow"));
+            newList.Add(new Audio("Royal Republic", "Tommy-Gun", 240, "https://cs1-39v4.vk-cdn.net/p3/f8976024b186b0.mp3?extra=g8g_BX0Tew0zirBbXNMITv7kxfFz_ESbgG1jsDJKS-kFn149Lrplr64LG9vq3izujeCWRTCz-m7h6w78_Wpp9YomRejbrYXpLHDcv3M3C7mEaGVUm_1DX6GrPikhAHRGdSU1JI69v6MA"));
+            newList.Add(new Audio("Royal Republic", "Addictive", 300, "https://cs1-50v4.vk-cdn.net/p22/301ae94e77c654.mp3?extra=JAJ-Xdi1KxjkiW5y5aFRARmyMSq9QPoGf43uad2B_zS5L2bDRzmufsAYke3jAPOxASoYCrsztz6j3hPHpYobbQmAnTnBCJ9cyyUkKiGCYARosPQYjZPuVnCVCnLm1G5LzZ45kS0Syps"));
+            newList.Add(new Audio("Royal Republic", "Underwear", 300, "https://cs1-51v4.vk-cdn.net/p7/2a29b740d9fcd5.mp3?extra=vegpI22Lk464DWYzQjzta4JirPDL3cj_KytuYA52PyWvFP6Q1Y1gq6nhfMLeGIYJB95EChAB4KranM2__Dfzfh-FSU-M2iZkO8t7rs3bgCjmfju7MvkChsRHMlZl2fQ3jbrNbho88Q"));
             return newList;
         }
     }
