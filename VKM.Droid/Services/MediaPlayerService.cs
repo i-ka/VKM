@@ -45,11 +45,13 @@ namespace VKM.Droid.Services
         private Thread _playbackPosThread;
 
         public delegate void OnInstanceListener(MediaPlayerService instance);
-        public delegate void CompletionListener();
+        public delegate void PlayerEventListener();
         public delegate void PlaybackPositionListener(long currentPos);
 
         public static event OnInstanceListener OnInstanceCreated;
-        public event CompletionListener OnCompletion;
+        public event PlayerEventListener OnNext;
+        public event PlayerEventListener OnPrev;
+        public event PlayerEventListener OnError;
         public event PlaybackPositionListener PlaybackPositionChanged;
 
         public override void OnCreate()
@@ -57,6 +59,18 @@ namespace VKM.Droid.Services
             instance = this;
             OnInstanceCreated(this);
             _player = new MediaPlayer();
+            _player.Prepared += (sender, e) => {
+                SetupPlaybackPosThread();
+                _player.Start();
+                _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
+                AquireWifiLock();
+                _state = VkmPlaybackState.Playing;
+            };
+            _player.Completion += (sender, e) => Next();
+            _player.Error += (sender, e) => {
+                Stop();
+                OnError();
+            };
             //int version = (int) Build.VERSION.SdkInt;
             if (!(Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat)) {
                 _mediaSession = new MediaSession(Application.Context, "VKM player");
@@ -87,14 +101,6 @@ namespace VKM.Droid.Services
                 _player.SetDataSource(_currentAudio.source);
                 _player.PrepareAsync();
                 _state = VkmPlaybackState.Preparing;
-                _player.Prepared += (sender, e) => {
-                    SetupPlaybackPosThread();
-                    _player.Start();
-                    _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
-                    AquireWifiLock();
-                    _state = VkmPlaybackState.Playing;
-                };
-                _player.Completion += (sender, e) => OnCompletion(); //(sender, e) => Next();
             } else if (_state == VkmPlaybackState.Paused) {
                 _player.Start();
                 _state = VkmPlaybackState.Playing;
@@ -147,12 +153,12 @@ namespace VKM.Droid.Services
 
         private void Next()
         {
-            
+            OnNext();
         }
 
         private void Prev()
         {
-            
+            OnPrev();
         }
 
         public override IBinder OnBind(Intent intent)
@@ -228,6 +234,8 @@ namespace VKM.Droid.Services
             _wifiLock.Release();
             _wifiLock = null;
         }
+
+
     }
 
     class VkmMediaSessionCallBack : MediaSession.Callback
