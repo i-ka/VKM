@@ -12,7 +12,6 @@ using Android.Views;
 using Android.Widget;
 using MvvmCross.Droid.Views;
 
-using VKM.Core.ViewModels;
 using VKM.Droid.Services;
 
 namespace VKM.Droid.Views
@@ -33,7 +32,9 @@ namespace VKM.Droid.Views
         void SetupPlayer(MediaPlayerService instance)
         {
             player = instance;
-            player.OnCompletion += () => (ViewModel as MainViewModel).NextCommand.Execute();
+            player.OnNext += () => (ViewModel as MainViewModel).NextCommand.Execute();
+            player.OnPrev += () => (ViewModel as MainViewModel).PrevCommand.Execute();
+            player.OnError += OnPlayerError;
             player.PlaybackPositionChanged += OnPlayerPositionChanged;
         }
 
@@ -45,14 +46,19 @@ namespace VKM.Droid.Views
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            switch (item.ItemId)
-            {
-            case Resource.Id.settings:
-                (ViewModel as MainViewModel).OptionsButtonCommand.Execute(null);
-                return true;
-            default:
-                return base.OnOptionsItemSelected(item);
+            switch (item.ItemId) {
+                case Resource.Id.settings:
+                    (ViewModel as MainViewModel).OptionsButtonCommand.Execute(null);
+                    return true;
+                default:
+                    return base.OnOptionsItemSelected(item);
             }
+        }
+
+        private void OnPlayerError()
+        {
+            Console.WriteLine("Error");
+            (ViewModel as MainViewModel).NextCommand.Execute();
         }
 
         void OnPlayerPositionChanged(long pos)
