@@ -52,7 +52,32 @@ namespace VKM.Droid.Services
         public event PlayerEventListener OnNext;
         public event PlayerEventListener OnPrev;
         public event PlayerEventListener OnError;
+
+        public event PlaybackPositionListener DurationChanged;
+        private long _duration;
+        public long Duration
+        {
+            get { return _duration; }
+            set
+            {
+                if (_duration == value) return;
+                _duration = value;
+                DurationChanged(_duration);
+            }
+        }
+
         public event PlaybackPositionListener PlaybackPositionChanged;
+        private long _currPos;
+        public long CurrentPosition {
+            get
+            {
+                return _currPos;
+            }
+            set {
+                _currPos = value;
+                PlaybackPositionChanged(_currPos);
+            }
+        }
 
         public override void OnCreate()
         {
@@ -64,6 +89,7 @@ namespace VKM.Droid.Services
                 _player.Start();
                 _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
                 AquireWifiLock();
+                Duration = _player.Duration;
                 _state = VkmPlaybackState.Playing;
             };
             _player.Completion += (sender, e) => Next();
@@ -133,7 +159,7 @@ namespace VKM.Droid.Services
             while (true)
             {
                 if (_state != VkmPlaybackState.Playing) continue;
-                PlaybackPositionChanged(_player.CurrentPosition);
+                CurrentPosition = _player.CurrentPosition;
                 Thread.Sleep(100);
             }
         }
