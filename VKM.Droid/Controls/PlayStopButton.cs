@@ -43,7 +43,7 @@ namespace VKM.Droid.Controls
                 _isPlaying = value;
                 if (_isPlaying)
                 {
-                    SetImageResource(Resource.Mipmap.ic_action_magnifier);
+                    SetImageResource(Resource.Mipmap.ic_pause_button);
                 }
                 else
                 {
