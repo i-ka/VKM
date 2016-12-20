@@ -19,7 +19,7 @@ namespace VKM.Droid.Services
 {
     [Service]
     [IntentFilter(new[] { ActionPlay, ActionPause, ActionStop, ActionNext, ActionPrev, ActionSetSource })]
-    public class MediaPlayerService : Service
+    public class MediaPlayerService : Service, AudioManager.IOnAudioFocusChangeListener
     {
         public const string ActionPlay = "com.vkm.player.action.play";
         public const string ActionPause = "com.vkm.player.action.pause";
@@ -104,6 +104,7 @@ namespace VKM.Droid.Services
                 _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
                 AquireWifiLock();
                 Duration = _player.Duration;
+                (GetSystemService(AudioService) as AudioManager).RequestAudioFocus(this, Stream.Music, AudioFocus.Gain);
                 State = VkmPlaybackState.Playing;
             };
             _player.Completion += (sender, e) => Next();
@@ -275,7 +276,23 @@ namespace VKM.Droid.Services
             _wifiLock = null;
         }
 
-
+        public void OnAudioFocusChange([GeneratedEnum] AudioFocus focusChange)
+        {
+            switch (focusChange) {
+                case AudioFocus.Gain:
+                    _player.SetVolume(1.0f, 1.0f);
+                    break;
+                case AudioFocus.Loss:
+                    Stop();
+                    break;
+                case AudioFocus.LossTransient:
+                    Pause();
+                    break;
+                case AudioFocus.LossTransientCanDuck:
+                    _player.SetVolume(0.1f, 0.1f);
+                    break;
+            }
+        }
     }
 
     class VkmMediaSessionCallBack : MediaSession.Callback
