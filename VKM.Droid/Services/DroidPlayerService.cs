@@ -14,14 +14,13 @@ using VKM.Core.Services;
 namespace VKM.Droid.Services
 {
     class DroidPlayerService : IPlayerService
-
     {
         public VkmPlaybackState Status
         {
             get
             {
                 if (MediaPlayerService.instance != null) {
-                    return MediaPlayerService.instance.Status;
+                    return MediaPlayerService.instance.State;
                 }
                 return VkmPlaybackState.NoMedia;
             }

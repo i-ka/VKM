@@ -31,11 +31,9 @@ namespace VKM.Droid.Services
         public const string SourceValueName = "SOURCE";
 
         public static MediaPlayerService instance;
-        public VkmPlaybackState Status { get { return _state; } }
 
         private MediaPlayer _player;
         private AudioInfo _currentAudio;
-        private VkmPlaybackState _state = VkmPlaybackState.Stoped; //PlaybackState.NoMedia
         
         private WifiManager.WifiLock _wifiLock;
 
@@ -46,12 +44,28 @@ namespace VKM.Droid.Services
 
         public delegate void OnInstanceListener(MediaPlayerService instance);
         public delegate void PlayerEventListener();
+        public delegate void PlayerPlaybackStateListner(VkmPlaybackState state);
         public delegate void PlaybackPositionListener(long currentPos);
 
         public static event OnInstanceListener OnInstanceCreated;
         public event PlayerEventListener OnNext;
         public event PlayerEventListener OnPrev;
         public event PlayerEventListener OnError;
+
+        public event PlayerPlaybackStateListner PlaybackStateChanged;
+        private VkmPlaybackState _state = VkmPlaybackState.Stoped; //PlaybackState.NoMedia
+        public VkmPlaybackState State {
+            get { return _state; }
+            private set
+            {
+                if (_state == value) {
+                    return;
+                }
+                _state = value;
+                PlaybackStateChanged(_state);
+            }
+        }
+
 
         public event PlaybackPositionListener DurationChanged;
         private long _duration;
@@ -90,7 +104,7 @@ namespace VKM.Droid.Services
                 _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
                 AquireWifiLock();
                 Duration = _player.Duration;
-                _state = VkmPlaybackState.Playing;
+                State = VkmPlaybackState.Playing;
             };
             _player.Completion += (sender, e) => Next();
             _player.Error += (sender, e) => {
@@ -114,28 +128,28 @@ namespace VKM.Droid.Services
 
         private void Pause()
         {
-            if (_state == VkmPlaybackState.Playing) {
+            if (State == VkmPlaybackState.Playing) {
                 _player.Pause();
-                _state = VkmPlaybackState.Paused;
+                State = VkmPlaybackState.Paused;
             }
         }
 
         private void Play()
         {
-            if (_state == VkmPlaybackState.Stoped) {
+            if (State == VkmPlaybackState.Stoped) {
                 _player.SetAudioStreamType(Stream.Music);
                 _player.SetDataSource(_currentAudio.source);
                 _player.PrepareAsync();
-                _state = VkmPlaybackState.Preparing;
-            } else if (_state == VkmPlaybackState.Paused) {
+                State = VkmPlaybackState.Preparing;
+            } else if (State == VkmPlaybackState.Paused) {
                 _player.Start();
-                _state = VkmPlaybackState.Playing;
+                State = VkmPlaybackState.Playing;
             }
         }
 
         private void Seek(long msPos)
         {
-            if (_state == VkmPlaybackState.Paused || _state == VkmPlaybackState.Playing) {
+            if (State == VkmPlaybackState.Paused || State == VkmPlaybackState.Playing) {
                 _player.SeekTo((int)msPos);
             }
         }
@@ -158,7 +172,7 @@ namespace VKM.Droid.Services
             Console.WriteLine("Stert checking playback position");
             while (true)
             {
-                if (_state != VkmPlaybackState.Playing) continue;
+                if (State != VkmPlaybackState.Playing) continue;
                 CurrentPosition = _player.CurrentPosition;
                 Thread.Sleep(100);
             }
@@ -166,14 +180,14 @@ namespace VKM.Droid.Services
 
         private void Stop()
         {
-            if (_state == VkmPlaybackState.Paused || _state == VkmPlaybackState.Playing) {
+            if (State == VkmPlaybackState.Paused || State == VkmPlaybackState.Playing) {
                 _player.Stop();
                 _player.Reset();
                 ReleaseWifiLock();
-                _state = VkmPlaybackState.Stoped;
-            } else if (_state == VkmPlaybackState.Preparing) {
+                State = VkmPlaybackState.Stoped;
+            } else if (State == VkmPlaybackState.Preparing) {
                 _player.Reset();
-                _state = VkmPlaybackState.Stoped;
+                State = VkmPlaybackState.Stoped;
             }
         }
 
