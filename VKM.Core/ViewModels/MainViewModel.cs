@@ -70,11 +70,9 @@ namespace VKM.Core.ViewModels
                         } else {
                             StartPlayer();
                         }
-                        CurrentAudio.IsPlaying = !CurrentAudio.IsPlaying;
                         return;
                     }
                     CurrentAudio = audio;
-                    CurrentAudio.IsPlaying = true;
                     StartPlayer();
                 });
             }
@@ -87,7 +85,6 @@ namespace VKM.Core.ViewModels
                     if (CurrentAudio == null) {
                         CurrentAudio = _audioList[0];
                     }
-                    CurrentAudio.IsPlaying = true;
                     StartPlayer();
                 });
             }
@@ -96,7 +93,6 @@ namespace VKM.Core.ViewModels
         {
             get {
                 return new MvxCommand(() => {
-                    CurrentAudio.IsPlaying = false;
                     PausePlayer();
                 });
             }
@@ -113,7 +109,6 @@ namespace VKM.Core.ViewModels
                     CurrentAudio = _audioList[newidx];
                     if (prState == VkmPlaybackState.Playing || prState == VkmPlaybackState.Preparing) {
                         StartPlayer();
-                        CurrentAudio.IsPlaying = true;
                     }
                 });
             }
@@ -130,7 +125,6 @@ namespace VKM.Core.ViewModels
                     CurrentAudio = _audioList[newidx];
                     if (prState == VkmPlaybackState.Playing || prState == VkmPlaybackState.Preparing) {
                         StartPlayer();
-                        CurrentAudio.IsPlaying = true;
                     }
                 });
             }
@@ -152,6 +146,20 @@ namespace VKM.Core.ViewModels
         {
             if (_playerService.Status != VkmPlaybackState.NoMedia) {
                 _playerService.Pause();
+            }
+        }
+
+        public void PlayerStateChanged(VkmPlaybackState state)
+        {
+            switch (state) {
+                case VkmPlaybackState.Playing:
+                    CurrentAudio.IsPlaying = true;
+                    break;
+                case VkmPlaybackState.Paused:
+                case VkmPlaybackState.Stoped:
+                case VkmPlaybackState.Preparing:
+                    CurrentAudio.IsPlaying = false;
+                    break;
             }
         }
 

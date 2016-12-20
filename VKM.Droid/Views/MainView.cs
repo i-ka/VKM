@@ -35,6 +35,7 @@ namespace VKM.Droid.Views
             player.OnNext += () => (ViewModel as MainViewModel).NextCommand.Execute();
             player.OnPrev += () => (ViewModel as MainViewModel).PrevCommand.Execute();
             player.OnError += OnPlayerError;
+            player.PlaybackStateChanged += (state) => (ViewModel as MainViewModel).PlayerStateChanged(state);
             player.PlaybackPositionChanged += OnPlayerPositionChanged;
         }
 
