@@ -37,6 +37,7 @@ namespace VKM.Droid.Views
             player.OnError += OnPlayerError;
             player.PlaybackStateChanged += (state) => (ViewModel as MainViewModel).PlayerStateChanged(state);
             player.PlaybackPositionChanged += OnPlayerPositionChanged;
+            player.DurationChanged += OnDurationChanged;
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -65,6 +66,11 @@ namespace VKM.Droid.Views
         void OnPlayerPositionChanged(long pos)
         {
             Console.WriteLine("Current position: " + pos.ToString());
+        }
+
+        void OnDurationChanged(long duration)
+        {
+            Console.WriteLine("Current playback duration is:" + duration.ToString());
         }
     }
 }
