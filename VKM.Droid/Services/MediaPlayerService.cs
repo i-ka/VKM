@@ -98,15 +98,7 @@ namespace VKM.Droid.Services
             instance = this;
             OnInstanceCreated(this);
             _player = new MediaPlayer();
-            _player.Prepared += (sender, e) => {
-                SetupPlaybackPosThread();
-                _player.Start();
-                _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
-                AquireWifiLock();
-                Duration = _player.Duration;
-                (GetSystemService(AudioService) as AudioManager).RequestAudioFocus(this, Stream.Music, AudioFocus.Gain);
-                State = VkmPlaybackState.Playing;
-            };
+            _player.Prepared += OnPlayerPrepared;
             _player.Completion += (sender, e) => Next();
             _player.Error += (sender, e) => {
                 Stop();
@@ -146,6 +138,17 @@ namespace VKM.Droid.Services
                 _player.Start();
                 State = VkmPlaybackState.Playing;
             }
+        }
+
+        private void OnPlayerPrepared(object sender, EventArgs e)
+        {
+            SetupPlaybackPosThread();
+            _player.Start();
+            _player.SetWakeMode(ApplicationContext, WakeLockFlags.Partial);
+            AquireWifiLock();
+            Duration = _player.Duration;
+            (GetSystemService(AudioService) as AudioManager).RequestAudioFocus(this, Stream.Music, AudioFocus.Gain);
+            State = VkmPlaybackState.Playing;
         }
 
         private void Seek(long msPos)
