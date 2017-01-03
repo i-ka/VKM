@@ -12,11 +12,13 @@ namespace VKM.Core.ViewModels
     public class MainViewModel :
         MvxViewModel
     {
-        private IPlayerService _playerService;
-        public MainViewModel(IVkAudioService service, IPlayerService plService)
+        private readonly IPlayerService _playerService;
+        private readonly IVkAudioService _vkAudioService;
+        public MainViewModel(IVkAudioService vkAudioService, IPlayerService playerService)
         {
-            _playerService = plService;
-            AudioList = service.GetAudioList();
+            _playerService = playerService;
+            _vkAudioService = vkAudioService;
+            _vkAudioService.GetMyPlaylist((list) => AudioList = list, null);
         }
         private List<Audio> _audioList;
         public List<Audio> AudioList
@@ -50,16 +52,8 @@ namespace VKM.Core.ViewModels
         }
 
         private MvxCommand _optionsButtonCommand;
-        public MvxCommand OptionsButtonCommand
-        {
-            get
-            {
-                if (_optionsButtonCommand == null) {
-                    _optionsButtonCommand = new MvxCommand(OnOptionsButtonClicked);
-                }
-                return _optionsButtonCommand;
-            }
-        }
+        public MvxCommand OptionsButtonCommand => _optionsButtonCommand ?? (_optionsButtonCommand = new MvxCommand(OnOptionsButtonClicked));
+
         public MvxCommand<Audio> SelectAudio
         {
             get {
@@ -89,20 +83,14 @@ namespace VKM.Core.ViewModels
                 });
             }
         }
-        public MvxCommand PauseCommand
-        {
-            get {
-                return new MvxCommand(() => {
-                    PausePlayer();
-                });
-            }
-        }
+        public MvxCommand PauseCommand => new MvxCommand(PausePlayer);
+
         public MvxCommand NextCommand
         {
             get {
                 return new MvxCommand(() => {
-                    VkmPlaybackState prState = _playerService.Status;
-                    int newidx = _audioList.IndexOf(CurrentAudio) + 1;
+                    var prState = _playerService.Status;
+                    var newidx = _audioList.IndexOf(CurrentAudio) + 1;
                     if (newidx >= _audioList.Count) {
                         newidx = 0;
                     }
@@ -117,8 +105,8 @@ namespace VKM.Core.ViewModels
         {
             get {
                 return new MvxCommand(() => {
-                    VkmPlaybackState prState = _playerService.Status;
-                    int newidx = _audioList.IndexOf(CurrentAudio) - 1;
+                    var prState = _playerService.Status;
+                    var newidx = _audioList.IndexOf(CurrentAudio) - 1;
                     if (newidx < 0) {
                         newidx = _audioList.Count - 1;
                     }
