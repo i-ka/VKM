@@ -21,7 +21,7 @@ namespace VKM.Droid.Views
         Theme = "@android:style/Theme.Holo")]
     class MainView : MvxActivity
     {
-        MediaPlayerService player;
+        private MediaPlayerService _player;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -32,13 +32,13 @@ namespace VKM.Droid.Views
 
         void SetupPlayer(MediaPlayerService instance)
         {
-            player = instance;
-            player.OnNext += () => (ViewModel as MainViewModel).NextCommand.Execute();
-            player.OnPrev += () => (ViewModel as MainViewModel).PrevCommand.Execute();
-            player.OnError += OnPlayerError;
-            player.PlaybackStateChanged += (state) => (ViewModel as MainViewModel).PlayerStateChanged(state);
-            player.PlaybackPositionChanged += OnPlayerPositionChanged;
-            player.DurationChanged += OnDurationChanged;
+            _player = instance;
+            _player.OnNext += () => (ViewModel as MainViewModel)?.NextCommand.Execute();
+            _player.OnPrev += () => (ViewModel as MainViewModel)?.PrevCommand.Execute();
+            _player.OnError += OnPlayerError;
+            _player.PlaybackStateChanged += (state) => (ViewModel as MainViewModel)?.PlayerStateChanged(state);
+            _player.PlaybackPositionChanged += OnPlayerPositionChanged;
+            _player.DurationChanged += OnDurationChanged;
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -51,10 +51,10 @@ namespace VKM.Droid.Views
         {
             switch (item.ItemId) {
                 case Resource.Id.settings:
-                    (ViewModel as MainViewModel).OptionsButtonCommand.Execute();
+                    (ViewModel as MainViewModel)?.OptionsButtonCommand.Execute();
                     return true;
                 case Resource.Id.search:
-                    (ViewModel as MainViewModel).ToggleSearch.Execute();
+                    (ViewModel as MainViewModel)?.ToggleSearch.Execute();
                     var field = FindViewById<EditText>(Resource.Id.search_field);
                     var imm = (InputMethodManager)field.Context.GetSystemService(InputMethodService);
                     if (!(ViewModel as MainViewModel).ShowSearch)
@@ -78,7 +78,7 @@ namespace VKM.Droid.Views
         private void OnPlayerError()
         {
             Console.WriteLine("Error");
-            (ViewModel as MainViewModel).NextCommand.Execute();
+            (ViewModel as MainViewModel)?.NextCommand.Execute();
         }
 
         void OnPlayerPositionChanged(long pos)
