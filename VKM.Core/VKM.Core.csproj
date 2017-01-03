@@ -29,6 +29,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="JsonClasses\AuthInfo.cs" />
+    <Compile Include="JsonClasses\Playlist.cs" />
+    <Compile Include="JsonClasses\Quota.cs" />
+    <Compile Include="JsonClasses\Track.cs" />
+    <Compile Include="JsonClasses\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Audio.cs" />
     <Compile Include="Services\AudioInfo.cs" />
