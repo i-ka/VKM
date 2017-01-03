@@ -1,10 +1,18 @@
 using MvvmCross.Core.ViewModels;
+using VKM.Core.Services;
 
 namespace VKM.Core.ViewModels
 {
     public class FirstViewModel 
         : MvxViewModel
     {
+        private IVkAudioService _vkmService;
+
+        public FirstViewModel(IVkAudioService vkAudioService)
+        {
+            _vkmService = vkAudioService;
+        }
+
         private string _username;
         public string Username
         { 
@@ -33,7 +41,8 @@ namespace VKM.Core.ViewModels
         }
         private void OnLoginButtonPressed()
         {
-            ShowViewModel<MainViewModel>();
+            _vkmService.Login(Username, Password, ()=> ShowViewModel<MainViewModel>(), null);
+            //ShowViewModel<MainViewModel>();
         }
 
     }
