@@ -1,36 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-  <Button
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="30dp"
-    local:MvxBind="Click PlayCommand"
-    android:text="Play"/>
-  <Button
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="30dp"
-    local:MvxBind="Click PauseCommand"
-    android:text="Pause"/>
-  <Button
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="30dp"
-    local:MvxBind="Click NextCommand"
-    android:text="Next"/>
-  <Button
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="30dp"
-    local:MvxBind="Click PrevCommand"
-    android:text="Prev"/>
-  <Mvx.MvxListView
+  <LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="45dp" >
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+  </LinearLayout>
+    <Mvx.MvxListView
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     local:MvxBind="ItemsSource AudioList; ItemClick SelectAudio"
     local:MvxItemTemplate="@layout/item_audio"/>
-</LinearLayout>
+</RelativeLayout>

@@ -167,5 +167,16 @@ namespace VKM.Core.ViewModels
         {
             ShowViewModel<OptionsViewModel>();
         }
+
+        private string _searchTerm = "";
+        public string SearchTerm
+        {
+            get { return _searchTerm; }
+            set
+            {
+                _searchTerm = value;
+                RaisePropertyChanged(() => SearchTerm);
+            }
+        }
     }
 }
