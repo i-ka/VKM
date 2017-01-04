@@ -10,8 +10,7 @@ namespace VKM.Core.Services
     public interface IVkAudioService
     {
         void Search(string searchTerm, Action<List<Audio>> succesAction, Action<Exception> errorAction);
-        void Login(string login, string password, Action authSuccessAction, Action<Exception> authFailureAction);
+        void Login(string login = null, string password = null, Action authSuccessAction = null, Action<Exception> authFailureAction = null);
         void GetMyPlaylist(Action<List<Audio>> succesAction, Action<Exception> errorAction);
-        void MakeRequest<T>(string url, string verb, string postData, Action<T> successAction, Action<Exception> errAction);
     }
 }
