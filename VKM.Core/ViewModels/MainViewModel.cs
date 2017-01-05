@@ -178,5 +178,21 @@ namespace VKM.Core.ViewModels
                 RaisePropertyChanged(() => SearchTerm);
             }
         }
+
+        private bool _showSearch = false;
+        public bool ShowSearch
+        {
+            get { return _showSearch; }
+            set
+            {
+                _showSearch = value;
+                RaisePropertyChanged(() => ShowSearch);
+            }
+        }
+
+        public MvxCommand ToggleSearch
+        {
+            get { return new MvxCommand(() => ShowSearch = !ShowSearch); }
+        }
     }
 }

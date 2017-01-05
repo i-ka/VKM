@@ -52,6 +52,9 @@ namespace VKM.Droid.Views
                 case Resource.Id.settings:
                     (ViewModel as MainViewModel).OptionsButtonCommand.Execute(null);
                     return true;
+                case Resource.Id.search:
+                    (ViewModel as MainViewModel).ToggleSearch.Execute(null);
+                    return true;
                 default:
                     return base.OnOptionsItemSelected(item);
             }

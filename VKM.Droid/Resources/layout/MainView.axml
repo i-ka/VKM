@@ -7,7 +7,8 @@
   <LinearLayout
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="45dp" >
+    android:layout_height="45dp"
+    local:MvxBind="Visibility ShowSearch, Converter=Visibility" >
     <EditText
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
