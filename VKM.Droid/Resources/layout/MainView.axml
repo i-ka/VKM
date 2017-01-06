@@ -4,18 +4,21 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-  <LinearLayout
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="45dp"
-    local:MvxBind="Visibility ShowSearch, Converter=Visibility" >
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-  </LinearLayout>
     <Mvx.MvxListView
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    local:MvxBind="ItemsSource AudioList; ItemClick SelectAudio"
-    local:MvxItemTemplate="@layout/item_audio"/>
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        local:MvxBind="ItemsSource AudioList; ItemClick SelectAudio"
+        local:MvxItemTemplate="@layout/item_audio"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        local:MvxBind="Visibility ShowSearch, Converter=Visibility">
+      <EditText
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:id="@+id/search_field"
+          style="@style/TextFieldStyle"
+          local:MvxBind="Text SearchTerm"/>
+    </LinearLayout>
 </RelativeLayout>
