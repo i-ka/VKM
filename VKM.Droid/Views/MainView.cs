@@ -9,6 +9,7 @@ using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
+using Android.Views.InputMethods;
 using Android.Widget;
 using MvvmCross.Droid.Views;
 
@@ -50,10 +51,24 @@ namespace VKM.Droid.Views
         {
             switch (item.ItemId) {
                 case Resource.Id.settings:
-                    (ViewModel as MainViewModel).OptionsButtonCommand.Execute(null);
+                    (ViewModel as MainViewModel).OptionsButtonCommand.Execute();
                     return true;
                 case Resource.Id.search:
-                    (ViewModel as MainViewModel).ToggleSearch.Execute(null);
+                    (ViewModel as MainViewModel).ToggleSearch.Execute();
+                    var field = FindViewById<EditText>(Resource.Id.search_field);
+                    var imm = (InputMethodManager)field.Context.GetSystemService(InputMethodService);
+                    if (!(ViewModel as MainViewModel).ShowSearch)
+                    {
+                        //remove keyboard
+                        field.ClearFocus();
+                        imm.HideSoftInputFromWindow(field.WindowToken, 0);
+                    }
+                    else
+                    {
+                        //automaticly show keyboard
+                        field.RequestFocus();
+                        imm.ShowSoftInput(field, 0);
+                    }
                     return true;
                 default:
                     return base.OnOptionsItemSelected(item);
