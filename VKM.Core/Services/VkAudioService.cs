@@ -20,9 +20,6 @@ namespace VKM.Core.Services
         private const string ApiUrl = "https://api.soundcloud.com";
         private const string RefreshRequestType = "refresh_token";
         private const string PasswordLoginRequestType = "password";
-        private DateTime _tokenRefreshTime;
-        public string OAuthToken { get; set; }
-        public string RefreshToken { get; set; }
 
         private readonly IRestApiService _restApi;
         private IStorageService _storage;
@@ -51,7 +48,7 @@ namespace VKM.Core.Services
 
         private bool TokenExpired()
         {
-            return DateTime.Now >= _tokenRefreshTime;
+            return DateTime.Now >= _storage.TokenExpireTime;
         }
 
         public void Login(string login = null, string password = null , Action authSuccessAction = null, Action<Exception> authFailureAction = null)
@@ -62,9 +59,9 @@ namespace VKM.Core.Services
                 return;
             }
             string postData;
-            if (RefreshToken != null)
+            if (_storage.RefreshToken != null)
             {
-                postData = $"client_id={ApiKey}&client_secret={ClientSecret}&grant_type={RefreshRequestType}&refresh_token={RefreshToken}";
+                postData = $"client_id={ApiKey}&client_secret={ClientSecret}&grant_type={RefreshRequestType}&refresh_token={_storage.RefreshToken}";
             }
             else if (login != null && password != null)
             {
@@ -82,9 +79,9 @@ namespace VKM.Core.Services
                     if (result.error == null)
                     {
                         Mvx.Warning($"Login succcess. Granted token - {result.access_token}");
-                        OAuthToken = result.access_token;
-                        RefreshToken = result.refresh_token;
-                        _tokenRefreshTime = DateTime.Now.AddMilliseconds(result.expires_in);
+                        _storage.OAuthToken = result.access_token;
+                        _storage.RefreshToken = result.refresh_token;
+                        _storage.TokenExpireTime = DateTime.Now.AddSeconds(result.expires_in);
                         authSuccessAction?.Invoke();
                     }
                     else
@@ -96,7 +93,7 @@ namespace VKM.Core.Services
 
         public void GetMyPlaylist(Action<List<Audio>> succesAction, Action<Exception> errorAction)
         {
-            _restApi.MakeRequest<List<Playlist>>($"{ApiUrl}/me/playlists?oauth_token={OAuthToken}", "GET", "",
+            _restApi.MakeRequest<List<Playlist>>($"{ApiUrl}/me/playlists?oauth_token={_storage.OAuthToken}", "GET", "",
                 result =>
                 {
                     var audioList = new List<Audio>();
