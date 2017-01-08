@@ -1,5 +1,7 @@
+using System.Net;
 using MvvmCross.Core.ViewModels;
 using VKM.Core.Services;
+using MvvmCross.Platform;
 
 namespace VKM.Core.ViewModels
 {
@@ -11,6 +13,15 @@ namespace VKM.Core.ViewModels
         public FirstViewModel(IVkAudioService vkAudioService)
         {
             _vkmService = vkAudioService;
+            _vkmService.Login(null, null, () => ShowViewModel<MainViewModel>(), e =>
+            {
+                var webError = e as WebException;
+                if (webError == null) return;
+                if (((HttpWebResponse) webError.Response).StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    Mvx.Error("Incorrect login or password");
+                }
+            });
         }
 
         private string _username;
@@ -41,7 +52,14 @@ namespace VKM.Core.ViewModels
         }
         private void OnLoginButtonPressed()
         {
-            _vkmService.Login(Username, Password, ()=> ShowViewModel<MainViewModel>(), null);
+            _vkmService.Login(Username, Password, ()=> ShowViewModel<MainViewModel>(), e =>
+            {
+                var webError = e as WebException;
+                if (webError == null) return;
+                if (((HttpWebResponse)webError.Response).StatusCode == HttpStatusCode.Unauthorized) {
+                    Mvx.Error("Incorrect login or password");
+                }
+            });
             //ShowViewModel<MainViewModel>();
         }
 
