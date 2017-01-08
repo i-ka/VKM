@@ -27,7 +27,7 @@ namespace VKM.Core.ViewModels
             set
             {
                 _audioList = value;
-                CurrentAudio = _audioList.First();
+                //CurrentAudio = _audioList.First();
                 RaisePropertyChanged(() => AudioList);
             }
         }
@@ -151,36 +151,20 @@ namespace VKM.Core.ViewModels
             }
         }
 
+        public MvxCommand<string> SearchCommand
+        {
+            get { return new MvxCommand<string>((term) =>
+            {
+                _vkAudioService.Search(term, (result)=>
+                {
+                    AudioList = result;
+                }, null);
+            });}
+        }
+
         private void OnOptionsButtonClicked()
         {
             ShowViewModel<OptionsViewModel>();
-        }
-
-        private string _searchTerm = "";
-        public string SearchTerm
-        {
-            get { return _searchTerm; }
-            set
-            {
-                _searchTerm = value;
-                RaisePropertyChanged(() => SearchTerm);
-            }
-        }
-
-        private bool _showSearch = false;
-        public bool ShowSearch
-        {
-            get { return _showSearch; }
-            set
-            {
-                _showSearch = value;
-                RaisePropertyChanged(() => ShowSearch);
-            }
-        }
-
-        public MvxCommand ToggleSearch
-        {
-            get { return new MvxCommand(() => ShowSearch = !ShowSearch); }
         }
     }
 }

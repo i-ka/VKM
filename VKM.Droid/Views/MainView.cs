@@ -8,18 +8,25 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
+using MvvmCross.Binding.BindingContext;
+using MvvmCross.Binding.Droid.BindingContext;
+using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Droid.Views;
+using Android.Support.V7.Widget;
 
 using VKM.Droid.Services;
+using SearchView = Android.Support.V7.Widget.SearchView;
 
 namespace VKM.Droid.Views
 {
     [Activity(Label = "Main view",
-        Theme = "@android:style/Theme.Holo")]
-    class MainView : MvxActivity
+        Theme = "@style/AppStyle")]
+    class MainView : MvxAppCompatActivity<MainViewModel>, SearchView.IOnQueryTextListener
+
     {
         private MediaPlayerService _player;
 
@@ -44,7 +51,10 @@ namespace VKM.Droid.Views
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.ActionButtons, menu);
-            return base.OnCreateOptionsMenu(menu);
+            var search = (Android.Support.V7.Widget.SearchView) menu.FindItem(Resource.Id.search).ActionView;
+            search.SetOnQueryTextListener((SearchView.IOnQueryTextListener)this);
+            return true;
+            //return base.OnCreateOptionsMenu(menu);
         }
 
         public override bool OnOptionsItemSelected(IMenuItem item)
@@ -52,23 +62,6 @@ namespace VKM.Droid.Views
             switch (item.ItemId) {
                 case Resource.Id.settings:
                     (ViewModel as MainViewModel)?.OptionsButtonCommand.Execute();
-                    return true;
-                case Resource.Id.search:
-                    (ViewModel as MainViewModel)?.ToggleSearch.Execute();
-                    var field = FindViewById<EditText>(Resource.Id.search_field);
-                    var imm = (InputMethodManager)field.Context.GetSystemService(InputMethodService);
-                    if (!(ViewModel as MainViewModel).ShowSearch)
-                    {
-                        //remove keyboard
-                        field.ClearFocus();
-                        imm.HideSoftInputFromWindow(field.WindowToken, 0);
-                    }
-                    else
-                    {
-                        //automaticly show keyboard
-                        field.RequestFocus();
-                        imm.ShowSoftInput(field, 0);
-                    }
                     return true;
                 default:
                     return base.OnOptionsItemSelected(item);
@@ -89,6 +82,18 @@ namespace VKM.Droid.Views
         void OnDurationChanged(long duration)
         {
             Console.WriteLine("Current playback duration is:" + duration.ToString());
+        }
+
+        public bool OnQueryTextChange(string p0)
+        {
+            return true;
+        }
+
+        public bool OnQueryTextSubmit(string p0)
+        {
+            ViewModel.SearchCommand.Execute(p0);
+            
+            return true;
         }
     }
 }

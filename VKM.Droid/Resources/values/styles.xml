@@ -1,5 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <style name="AppStyle" parent="Theme.AppCompat">
+
+  </style>
+  <style name="VkmSearchView" parent="Widget.AppCompat.SearchView">
+    <!--<item name="searchIcon">@mipmap/ic_action_magnifier</item>-->
+  </style>
     <style name="TextFieldStyle">
         <item name="android:textSize">30dp</item>
         <item name="android:maxLines">1</item>
