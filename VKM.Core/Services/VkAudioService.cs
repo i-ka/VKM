@@ -25,10 +25,12 @@ namespace VKM.Core.Services
         public string RefreshToken { get; set; }
 
         private readonly IRestApiService _restApi;
+        private IStorageService _storage;
 
-        public VkAudioService(IRestApiService restApi)
+        public VkAudioService(IRestApiService restApi, IStorageService storage)
         {
             _restApi = restApi;
+            _storage = storage;
         }
 
         public void Search(string searchTerm, Action<List<Audio>> succesAction, Action<Exception> errorAction)

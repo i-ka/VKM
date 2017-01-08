@@ -28,6 +28,7 @@ namespace VKM.Droid
         {
             base.InitializeLastChance();
             Mvx.RegisterSingleton<IPlayerService>(() => new DroidPlayerService());
+            Mvx.RegisterSingleton<IStorageService>(() => new StorageService());
         }
     }
 }
