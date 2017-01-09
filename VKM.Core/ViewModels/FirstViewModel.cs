@@ -14,6 +14,8 @@ namespace VKM.Core.ViewModels
         public FirstViewModel(IVkAudioService vkAudioService)
         {
             _vkmService = vkAudioService;
+            Username = "";
+            Password = "";
             IsLoading = true;
             _vkmService.Login(null, null, OnLoginSuccess, (e) => IsLoading = false);
         }

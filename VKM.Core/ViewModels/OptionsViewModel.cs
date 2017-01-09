@@ -12,10 +12,12 @@ namespace VKM.Core.ViewModels
         MvxViewModel
     {
         private IStorageService _srtorage;
+        private IPlayerService _player;
 
-        public OptionsViewModel(IStorageService storage)
+        public OptionsViewModel(IStorageService storage, IPlayerService player)
         {
             _srtorage = storage;
+            _player = player;
         }
         private List<AudioSorting> _list = new List<AudioSorting>()
             {
@@ -55,6 +57,19 @@ namespace VKM.Core.ViewModels
             {
                 _srtorage.AudioSorting = value;
                 RaisePropertyChanged(() => CurrentAudioSorting);
+            }
+        }
+
+        public MvxCommand LogOutCommand
+        {
+            get
+            {
+                return new MvxCommand(() =>
+                {
+                    _srtorage.Clear();
+                    _player.Stop();
+                    ShowViewModel<FirstViewModel>();
+                });
             }
         }
     }
