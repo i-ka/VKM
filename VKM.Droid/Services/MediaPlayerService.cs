@@ -12,7 +12,7 @@ using Android.Media.Session;
 using Android.Runtime;
 using Android.Net.Wifi;
 using Android.Net;
-
+using Android.Support.V4.App;
 using VKM.Core.Services;
 
 namespace VKM.Droid.Services
@@ -221,6 +221,7 @@ namespace VKM.Droid.Services
                     else {
                         _mediaController.GetTransportControls().Play();
                     }
+                    BuildNotification(GenerateAction(Resource.Mipmap.ic_pause_button, "Pause", ActionPause));
                     break;
                 case ActionPause:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
@@ -229,6 +230,7 @@ namespace VKM.Droid.Services
                     else {
                         _mediaController.GetTransportControls().Pause();
                     }
+                    BuildNotification(GenerateAction(Resource.Mipmap.ic_play_button, "Play", ActionPlay));
                     break;
                 case ActionStop:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
@@ -259,6 +261,33 @@ namespace VKM.Droid.Services
                    break;
             }
             return StartCommandResult.Sticky;
+        }
+
+        private NotificationCompat.Action GenerateAction(int icon, string title, string intentAction)
+        {
+            var intent = new Intent(Application.Context, typeof(MediaPlayerService));
+            intent.SetAction(intentAction);
+            var pendingIntent = PendingIntent.GetService(Application.Context, 1, intent, 0);
+            return new NotificationCompat.Action.Builder( icon, title, pendingIntent ).Build();
+        }
+
+        private void BuildNotification(NotificationCompat.Action action)
+        {
+            var style = new Android.Support.V7.App.NotificationCompat.MediaStyle();
+            var intent = new Intent(Application.Context, typeof(MediaPlayerService));
+            intent.SetAction(ActionStop);
+            PendingIntent pendingIntent = PendingIntent.GetService(Application.Context, 1, intent, 0);
+            var builder = new NotificationCompat.Builder(this)
+                .SetSmallIcon(Resource.Mipmap.Icon)
+                .SetContentTitle(_currentAudio.name)
+                .SetContentText(_currentAudio.author)
+                .SetDeleteIntent(pendingIntent)
+                .SetStyle(style);
+            builder.AddAction(GenerateAction(Resource.Mipmap.ic_backward, "Previous", ActionPrev));
+            builder.AddAction(action);
+            builder.AddAction(GenerateAction(Resource.Mipmap.ic_forward, "Next", ActionNext));
+            var notificationManager = (NotificationManager) GetSystemService(NotificationService);
+            notificationManager.Notify(1, builder.Build());
         }
 
         private void AquireWifiLock()
