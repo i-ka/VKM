@@ -50,12 +50,20 @@ namespace VKM.Core.Services
             _restApi.MakeRequest<List<Track>>(searchUrl, "GET", "",
                 result =>
                 {
-                    var audioList = result.Where(tr => tr.streamable).Select(tr =>
+                    var audioList = result.Where(tr => tr.streamable);
+                    if (_storage.FiltersActive)
+                    {
+                        if (string.IsNullOrWhiteSpace(_storage.FilterString))
+                        {
+                            audioList = audioList.Where((tr) => !tr.title.ToLower().Contains(_storage.FilterString.ToLower()));
+                        }
+                    }
+                    var selectedList = audioList.Select(tr =>
                     {
                         var streamUrl = tr.stream_url + "?client_id=" + ApiKey;
                         return new Audio(tr.user.username, tr.title, tr.duration, streamUrl);
                     }).ToList();
-                    succesAction(audioList);
+                    succesAction(selectedList);
                 },
                 error => errorAction?.Invoke(error));
         }
