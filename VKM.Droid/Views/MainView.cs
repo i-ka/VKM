@@ -40,10 +40,10 @@ namespace VKM.Droid.Views
         void SetupPlayer(MediaPlayerService instance)
         {
             _player = instance;
-            _player.OnNext += () => (ViewModel as MainViewModel)?.NextCommand.Execute();
-            _player.OnPrev += () => (ViewModel as MainViewModel)?.PrevCommand.Execute();
+            _player.OnNext += () => ViewModel?.NextCommand.Execute();
+            _player.OnPrev += () => ViewModel?.PrevCommand.Execute();
             _player.OnError += OnPlayerError;
-            _player.PlaybackStateChanged += (state) => (ViewModel as MainViewModel)?.PlayerStateChanged(state);
+            _player.PlaybackStateChanged += (state) => ViewModel?.PlayerStateChanged(state);
             _player.PlaybackPositionChanged += OnPlayerPositionChanged;
             _player.DurationChanged += OnDurationChanged;
         }
@@ -51,17 +51,16 @@ namespace VKM.Droid.Views
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.ActionButtons, menu);
-            var search = (Android.Support.V7.Widget.SearchView) menu.FindItem(Resource.Id.search).ActionView;
-            search.SetOnQueryTextListener((SearchView.IOnQueryTextListener)this);
+            var search = (SearchView) menu.FindItem(Resource.Id.search).ActionView;
+            search.SetOnQueryTextListener(this);
             return true;
-            //return base.OnCreateOptionsMenu(menu);
         }
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             switch (item.ItemId) {
                 case Resource.Id.settings:
-                    (ViewModel as MainViewModel)?.OptionsButtonCommand.Execute();
+                    ViewModel?.OptionsButtonCommand.Execute();
                     return true;
                 default:
                     return base.OnOptionsItemSelected(item);
@@ -71,7 +70,7 @@ namespace VKM.Droid.Views
         private void OnPlayerError()
         {
             Console.WriteLine("Error");
-            (ViewModel as MainViewModel)?.NextCommand.Execute();
+            ViewModel?.NextCommand.Execute();
         }
 
         void OnPlayerPositionChanged(long pos)
@@ -91,7 +90,7 @@ namespace VKM.Droid.Views
 
         public bool OnQueryTextSubmit(string p0)
         {
-            ViewModel.SearchCommand.Execute(p0);
+            ViewModel?.SearchCommand.Execute(p0);
             
             return true;
         }
