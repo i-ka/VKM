@@ -21,11 +21,17 @@
         android:shadowDx="2"
         android:shadowDy="2"
         android:shadowRadius="25" />
+    <ProgressBar
+        android:layout_gravity="center"
+        android:layout_height="50dp"
+        android:layout_width="50dp"
+        local:MvxBind="Visibility Visibility(IsLoading)"
+        android:layout_marginTop="100dp" />
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
-        local:MvxBind="Text Username"
+        local:MvxBind="Text Username; Visibility InvertedVisibility(IsLoading)"
         style="@style/TextFieldStyle"
         android:hint="Your login" />
     <EditText
@@ -34,14 +40,14 @@
         android:layout_marginTop="10dp"
         android:inputType="textImeMultiLine|textPassword"
         style="@style/TextFieldStyle"
-        local:MvxBind="Text Password"
+        local:MvxBind="Text Password; Visibility InvertedVisibility(IsLoading)"
         android:hint="Your pass" />
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textSize="40dp"
         android:text="LOGIN"
-        local:MvxBind="Click LoginButtonCommand"
+        local:MvxBind="Click LoginButtonCommand;  Visibility InvertedVisibility(IsLoading)"
         android:layout_margin="10dp"
         android:background="@drawable/button" />
 </LinearLayout>

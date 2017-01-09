@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using MvvmCross.Core.ViewModels;
 using VKM.Core.Services;
@@ -13,15 +14,8 @@ namespace VKM.Core.ViewModels
         public FirstViewModel(IVkAudioService vkAudioService)
         {
             _vkmService = vkAudioService;
-            _vkmService.Login(null, null, () => ShowViewModel<MainViewModel>(), e =>
-            {
-                var webError = e as WebException;
-                if (webError == null) return;
-                if (((HttpWebResponse) webError.Response).StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    Mvx.Error("Incorrect login or password");
-                }
-            });
+            IsLoading = true;
+            _vkmService.Login(null, null, OnLoginSuccess, (e) => IsLoading = false);
         }
 
         private string _username;
@@ -35,8 +29,33 @@ namespace VKM.Core.ViewModels
         public string Password
         {
             get { return _password; }
-            set { SetProperty(ref _password, value);
-}
+            set
+            { SetProperty(ref _password, value); }
+        }
+
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get { return _isLoading; }
+            private set
+            {
+                if (_isLoading == value) return;
+                _isLoading = value;
+                RaisePropertyChanged(() => IsLoading);
+            }
+        }
+
+        private string _errorText;
+
+        public string ErrorText
+        {
+            get { return _errorText; }
+            private set
+            {
+                if(_errorText == value) return;
+                _errorText = value;
+                RaisePropertyChanged(() => ErrorText);
+            }
         }
 
         private MvxCommand _loginButtonCommand;
@@ -52,16 +71,26 @@ namespace VKM.Core.ViewModels
         }
         private void OnLoginButtonPressed()
         {
-            _vkmService.Login(Username, Password, ()=> ShowViewModel<MainViewModel>(), e =>
-            {
-                var webError = e as WebException;
-                if (webError == null) return;
-                if (((HttpWebResponse)webError.Response).StatusCode == HttpStatusCode.Unauthorized) {
-                    Mvx.Error("Incorrect login or password");
-                }
-            });
-            //ShowViewModel<MainViewModel>();
+            IsLoading = true;
+            _vkmService.Login(Username, Password, ()=> ShowViewModel<MainViewModel>(), OnLoginError);
         }
 
+        private void OnLoginError(Exception error)
+        {
+            var webError = error as WebException;
+            if (webError == null) return;
+            if (((HttpWebResponse)webError.Response).StatusCode == HttpStatusCode.Unauthorized) {
+                ErrorText = "Incorrect login or password";
+                return;
+            }
+            ErrorText = "Connection error";
+            IsLoading = false;
+        }
+
+        private void OnLoginSuccess()
+        {
+            IsLoading = false;
+            ShowViewModel<MainViewModel>();
+        }
     }
 }
