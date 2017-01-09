@@ -15,7 +15,7 @@ using MvvmCross.Droid.Support.V7.AppCompat;
 
 namespace VKM.Droid.Views
 {
-    [Activity(Label = "Options view",
+    [Activity(Label = "Options",
         Theme = "@style/Theme.AppCompat")]
     class OptionsView : MvxAppCompatActivity
     {
