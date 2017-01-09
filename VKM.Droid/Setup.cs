@@ -1,10 +1,14 @@
 using Android.Content;
+using MvvmCross.Binding.Bindings.Target.Construction;
 using MvvmCross.Droid.Platform;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform.Platform;
 using MvvmCross.Platform;
 using VKM.Droid.Services;
 using VKM.Core.Services;
+using MvvmCross.Droid.Support.V7.AppCompat;
+using MvvmCross.Droid.Support.V7.AppCompat.Target;
+using MvvmCross.Droid.Support.V7.AppCompat.Widget;
 
 namespace VKM.Droid
 {
@@ -29,6 +33,12 @@ namespace VKM.Droid
             base.InitializeLastChance();
             Mvx.RegisterSingleton<IPlayerService>(() => new DroidPlayerService());
             Mvx.RegisterSingleton<IStorageService>(() => new StorageService());
+        }
+
+        protected override void FillTargetFactories(IMvxTargetBindingFactoryRegistry registry)
+        {
+            //MvxAppCompatSetupHelper.FillTargetFactories(registry);
+            base.FillTargetFactories(registry);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace VKM.Core.Services
 {
     public enum AudioSorting
     {
-        Date, Duration
+        Date, Duration, None
     }
     public interface IStorageService
     {

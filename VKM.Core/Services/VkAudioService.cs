@@ -32,7 +32,21 @@ namespace VKM.Core.Services
 
         public void Search(string searchTerm, Action<List<Audio>> succesAction, Action<Exception> errorAction)
         {
-            var searchUrl = $"{ApiUrl}/tracks?q={searchTerm.Replace(' ', '+')}&client_id={ApiKey}";
+            string orderBy = null;
+            switch (_storage.AudioSorting)
+            {
+                case AudioSorting.Date:
+                    orderBy = "created_at";
+                    break;
+                case AudioSorting.Duration:
+                    orderBy = "duration";
+                    break;
+                case AudioSorting.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            var searchUrl = $"{ApiUrl}/tracks?q={searchTerm.Replace(' ', '+')}&client_id={ApiKey}{(orderBy != null ? $"&order={orderBy}" : "")}";
             _restApi.MakeRequest<List<Track>>(searchUrl, "GET", "",
                 result =>
                 {

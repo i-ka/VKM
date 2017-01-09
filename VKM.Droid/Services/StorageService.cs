@@ -74,7 +74,15 @@ namespace VKM.Droid.Services
 
         public AudioSorting AudioSorting
         {
-            get { return (AudioSorting)Enum.Parse(typeof(AudioSorting), GetValue("VkmSorting")); }
+            get
+            {
+                var sortType = GetValue("VkmSorting");
+                if (sortType != null)
+                {
+                    return (AudioSorting)Enum.Parse(typeof(AudioSorting), GetValue("VkmSorting"));
+                }
+                return AudioSorting.None;
+            }
             set
             {
                 AddValue("VkmSorting", value.ToString());
@@ -83,7 +91,7 @@ namespace VKM.Droid.Services
 
         public bool FiltersActive
         {
-            get { return GetValue("VkmFiltersActive") == "true"; }
+            get { return GetValue("VkmFiltersActive") == "True"; }
             set
             {
                 AddValue("VkmFiltersActive", value.ToString());

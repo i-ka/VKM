@@ -14,7 +14,8 @@
         android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
         android:layout_marginTop="50dp"
         android:textSize="20sp"
-        android:id="@+id/checkbox_filter" />
+        android:id="@+id/checkbox_filter"
+        local:MvxBind="Checked FiterActive"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,7 +29,7 @@
         android:maxLines="1"
         android:scrollHorizontally="true"
         android:inputType="textImeMultiLine"
-        local:MvxBind="Text FilterWords"
+        local:MvxBind="Text FilterString"
         android:id="@+id/editText1" />
     <LinearLayout
         android:layout_width="fill_parent"
@@ -44,7 +45,8 @@
         <MvxSpinner
             android:id="@+id/spinner"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            local:MvxBind="ItemsSource List; SelectedItem CurrentAudioSorting"/>
     </LinearLayout>
     <Button
         android:layout_marginTop="200dp"
