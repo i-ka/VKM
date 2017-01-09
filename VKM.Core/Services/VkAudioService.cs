@@ -61,7 +61,7 @@ namespace VKM.Core.Services
                     var selectedList = audioList.Select(tr =>
                     {
                         var streamUrl = tr.stream_url + "?client_id=" + ApiKey;
-                        return new Audio(tr.user.username, tr.title, tr.duration, streamUrl);
+                        return new Audio(tr.id, tr.user.username, tr.title, tr.duration, streamUrl);
                     }).ToList();
                     succesAction(selectedList);
                 },
@@ -121,7 +121,7 @@ namespace VKM.Core.Services
                     var audioList = new List<Audio>();
                     foreach (var pl in result)
                     {
-                        audioList.AddRange(from tr in pl.tracks where tr.streamable let streamUrl = tr.stream_url + "?client_id=" + ApiKey select new Audio(tr.user.username, tr.title, tr.duration, streamUrl));
+                        audioList.AddRange(from tr in pl.tracks where tr.streamable let streamUrl = tr.stream_url + "?client_id=" + ApiKey select new Audio(tr.id, tr.user.username, tr.title, tr.duration, streamUrl));
                     }
                     succesAction(audioList);
                 },

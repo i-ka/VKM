@@ -10,8 +10,9 @@ namespace VKM.Core.Services
     public class Audio : MvxViewModel
     {
         private AudioInfo _audioInfo = new AudioInfo();
-        public Audio(string author, string name, int duration, string source = "")
+        public Audio(int id, string author, string name, int duration, string source = "")
         {
+            Id = id;
             Author = author;
             Name = name;
             Duration = duration;
@@ -19,6 +20,16 @@ namespace VKM.Core.Services
             IsPlaying = false;
         }
         public AudioInfo AudioInfo { get { return _audioInfo; } }
+
+        public int Id
+        {
+            get { return _audioInfo.id; }
+            set
+            {
+                _audioInfo.id = value;
+                RaisePropertyChanged(() => Id);
+            }
+        }
 
         public string Source {
             get

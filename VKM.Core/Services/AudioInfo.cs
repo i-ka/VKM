@@ -12,10 +12,11 @@ namespace VKM.Core.Services
         public string author { get; set; }
         public string name { get; set; }
         public int duration { get; set; }
+        public int id { get; set; }
 
         public string Pack()
         {
-            return source + ";" + author + ";" + name + ";" + duration.ToString();
+            return id.ToString() + ";" + source + ";" + author + ";" + name + ";" + duration.ToString();
         }
 
         public static AudioInfo UnPack(string packedLine)
@@ -23,10 +24,11 @@ namespace VKM.Core.Services
             string[] splitedValues = packedLine.Split(';');
             return new AudioInfo()
             {
-                source = splitedValues[0],
-                author = splitedValues[1],
-                name = splitedValues[2],
-                duration = Convert.ToInt32(splitedValues[3])
+                id =  Convert.ToInt32(splitedValues[0]),
+                source = splitedValues[1],
+                author = splitedValues[2],
+                name = splitedValues[3],
+                duration = Convert.ToInt32(splitedValues[4])
             };
         }
     }

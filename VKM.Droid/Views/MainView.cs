@@ -36,6 +36,10 @@ namespace VKM.Droid.Views
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.MainView);
             MediaPlayerService.OnInstanceCreated += SetupPlayer;
+            if (MediaPlayerService.instance != null)
+            {
+                SetupPlayer(MediaPlayerService.instance);
+            }
         }
 
         void SetupPlayer(MediaPlayerService instance)
