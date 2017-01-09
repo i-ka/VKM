@@ -24,7 +24,7 @@ using SearchView = Android.Support.V7.Widget.SearchView;
 namespace VKM.Droid.Views
 {
     [Activity(Label = "Main view",
-        Theme = "@style/AppStyle")]
+        Theme = "@style/Theme.AppCompat")]
     class MainView : MvxAppCompatActivity<MainViewModel>, SearchView.IOnQueryTextListener
 
     {

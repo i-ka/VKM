@@ -5,7 +5,7 @@ using MvvmCross.Droid.Views;
 namespace VKM.Droid.Views
 {
     [Activity(Label = "View for FirstViewModel",
-        Theme = "@android:style/Theme.Material.NoActionBar",
+        Theme = "@style/Theme.AppCompat.NoActionBar",
         NoHistory = true)]
     public class FirstView : MvxActivity
     {
