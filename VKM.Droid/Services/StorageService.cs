@@ -66,14 +66,42 @@ namespace VKM.Droid.Services
         {
             get
             {
-                string result = GetValue("VkmTokenExpireTime");
-                if (result != null)
-                {
-                    return DateTime.Parse(result);
-                }
-                return new DateTime();
+                var result = GetValue("VkmTokenExpireTime");
+                return result != null ? DateTime.Parse(result) : new DateTime();
             }
             set { AddValue("VkmTokenExpireTime", value.ToString(CultureInfo.InvariantCulture)); }
+        }
+
+        public AudioSorting AudioSorting
+        {
+            get { return (AudioSorting)Enum.Parse(typeof(AudioSorting), GetValue("VkmSorting")); }
+            set
+            {
+                AddValue("VkmSorting", value.ToString());
+            }
+        }
+
+        public bool FiltersActive
+        {
+            get { return GetValue("VkmFiltersActive") == "true"; }
+            set
+            {
+                AddValue("VkmFiltersActive", value.ToString());
+            }
+        }
+
+        public string FilterString
+        {
+            get { return GetValue("VkmFilterString"); }
+            set
+            {
+                AddValue("VkmFilterString", value);
+            }
+        }
+
+        public void Clear()
+        {
+            _preferences.Edit().Clear().Commit();
         }
     }
 }
