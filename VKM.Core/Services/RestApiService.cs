@@ -29,11 +29,22 @@ namespace VKM.Core.Services
                 request.ContentType = "application/x-www-form-urlencoded";
                 request.BeginGetRequestStream((tocken) =>
                 {
-                    using (var reqStr = request.EndGetRequestStream(tocken)) {
-                        var writer = new StreamWriter(reqStr);
+                    Stream reqStream = null;
+                    try
+                    {
+                        reqStream = request.EndGetRequestStream(tocken);
+                        var writer = new StreamWriter(reqStream);
                         writer.Write(postData, 0, postData.Length);
                         writer.Flush();
                         BeginRequest(request, successAction, errAction);
+                    }
+                    catch (Exception e)
+                    {
+                        errAction?.Invoke(e);
+                    }
+                    finally
+                    {
+                        reqStream?.Dispose();
                     }
                 }, null);
                 return;
