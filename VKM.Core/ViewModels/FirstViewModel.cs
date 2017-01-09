@@ -58,6 +58,19 @@ namespace VKM.Core.ViewModels
             }
         }
 
+        private bool _showError;
+
+        public bool ShowError
+        {
+            get { return _showError; }
+            private set
+            {
+                if (_showError == value) return;
+                _showError = value;
+                RaisePropertyChanged(() => ShowError);
+            }
+        }
+
         private MvxCommand _loginButtonCommand;
         public MvxCommand LoginButtonCommand
         {
@@ -72,6 +85,7 @@ namespace VKM.Core.ViewModels
         private void OnLoginButtonPressed()
         {
             IsLoading = true;
+            ShowError = false;
             _vkmService.Login(Username, Password, ()=> ShowViewModel<MainViewModel>(), OnLoginError);
         }
 
@@ -79,11 +93,15 @@ namespace VKM.Core.ViewModels
         {
             var webError = error as WebException;
             if (webError == null) return;
-            if (((HttpWebResponse)webError.Response).StatusCode == HttpStatusCode.Unauthorized) {
+            if (((HttpWebResponse) webError.Response).StatusCode == HttpStatusCode.Unauthorized)
+            {
                 ErrorText = "Incorrect login or password";
-                return;
             }
-            ErrorText = "Connection error";
+            else
+            {
+                ErrorText = "Connection error";
+            }
+            ShowError = true;
             IsLoading = false;
         }
 

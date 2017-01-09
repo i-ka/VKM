@@ -11,12 +11,13 @@ using Android.Views;
 using Android.Widget;
 
 using MvvmCross.Droid.Views;
+using MvvmCross.Droid.Support.V7.AppCompat;
 
 namespace VKM.Droid.Views
 {
     [Activity(Label = "Options view",
-        Theme = "@android:style/Theme.Holo")]
-    class OptionsView : MvxActivity
+        Theme = "@style/Theme.AppCompat")]
+    class OptionsView : MvxAppCompatActivity
     {
         protected override void OnCreate(Bundle bundle)
         {

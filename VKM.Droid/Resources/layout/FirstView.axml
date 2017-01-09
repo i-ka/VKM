@@ -27,11 +27,18 @@
         android:layout_width="50dp"
         local:MvxBind="Visibility Visibility(IsLoading)"
         android:layout_marginTop="100dp" />
+  <TextView
+    android:layout_gravity="center"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:layout_marginTop="50dp"
+    local:MvxBind="Visibility Visibility(ShowError); Text ErrorText"
+    />
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         local:MvxBind="Text Username; Visibility InvertedVisibility(IsLoading)"
+        android:layout_marginTop="50dp"
         style="@style/TextFieldStyle"
         android:hint="Your login" />
     <EditText
