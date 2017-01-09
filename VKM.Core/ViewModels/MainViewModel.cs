@@ -18,7 +18,9 @@ namespace VKM.Core.ViewModels
         {
             _playerService = playerService;
             _vkAudioService = vkAudioService;
-            _vkAudioService.GetMyPlaylist((list) => AudioList = list, null);
+            ListIsEmpty = false;
+            IsLoading = true;
+            _vkAudioService.GetMyPlaylist(OnLoadingSuccess, OnLoadingError);
         }
         private List<Audio> _audioList;
         public List<Audio> AudioList
@@ -27,7 +29,6 @@ namespace VKM.Core.ViewModels
             set
             {
                 _audioList = value;
-                //CurrentAudio = _audioList.First();
                 RaisePropertyChanged(() => AudioList);
             }
         }
@@ -48,6 +49,30 @@ namespace VKM.Core.ViewModels
                 StopPlayer();
                 _playerService.SetSource(_currentAudio);
                 RaisePropertyChanged(() => CurrentAudio);
+            }
+        }
+
+        private bool _isLoading;
+
+        public bool IsLoading
+        {
+            get { return _isLoading; }
+            private set
+            {
+                if (_isLoading == value) return;
+                _isLoading = value;
+                RaisePropertyChanged(() => IsLoading);
+            }
+        }
+
+        private bool _listIsEmpty;
+        public bool ListIsEmpty
+        {
+            get { return _listIsEmpty; }
+            private set
+            {
+                _listIsEmpty = value;
+                RaisePropertyChanged(() => ListIsEmpty);
             }
         }
 
@@ -155,11 +180,22 @@ namespace VKM.Core.ViewModels
         {
             get { return new MvxCommand<string>((term) =>
             {
-                _vkAudioService.Search(term, (result)=>
-                {
-                    AudioList = result;
-                }, null);
+                ListIsEmpty = false;
+                IsLoading = true;
+                _vkAudioService.Search(term, OnLoadingSuccess, OnLoadingError);
             });}
+        }
+
+        private void OnLoadingSuccess(List<Audio> resultAudios)
+        {
+            AudioList = resultAudios;
+            IsLoading = false;
+            ListIsEmpty = AudioList.Count == 0;
+        }
+
+        private void OnLoadingError(Exception error)
+        {
+            IsLoading = false;
         }
 
         private void OnOptionsButtonClicked()

@@ -4,9 +4,23 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <ProgressBar
+        android:layout_gravity="center"
+        android:layout_height="50dp"
+        android:layout_width="50dp"
+        local:MvxBind="Visibility Visibility(IsLoading)"
+        android:layout_marginTop="100dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        local:MvxBind="Visibility Visibility(ListIsEmpty)"
+        android:textSize="20dp"
+        android:layout_gravity="center"
+        android:textColor="#fff"
+        android:text="Nothing found" />
     <Mvx.MvxListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        local:MvxBind="ItemsSource AudioList; ItemClick SelectAudio"
+        local:MvxBind="ItemsSource AudioList; ItemClick SelectAudio; Visibility InvertedVisibility(IsLoading)"
         local:MvxItemTemplate="@layout/item_audio" />
 </LinearLayout>
