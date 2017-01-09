@@ -18,7 +18,7 @@ namespace VKM.Core.ViewModels
         {
             _playerService = playerService;
             _vkAudioService = vkAudioService;
-            ListIsEmpty = false;
+            ShowMessage = false;
             IsLoading = true;
             _vkAudioService.GetMyPlaylist(OnLoadingSuccess, OnLoadingError);
         }
@@ -65,14 +65,26 @@ namespace VKM.Core.ViewModels
             }
         }
 
-        private bool _listIsEmpty;
-        public bool ListIsEmpty
+        private bool _showMessage;
+        public bool ShowMessage
         {
-            get { return _listIsEmpty; }
+            get { return _showMessage; }
             private set
             {
-                _listIsEmpty = value;
-                RaisePropertyChanged(() => ListIsEmpty);
+                _showMessage = value;
+                RaisePropertyChanged(() => ShowMessage);
+            }
+        }
+
+        private string _message;
+
+        public string Message
+        {
+            get { return _message;}
+            private set
+            {
+                _message = value;
+                RaisePropertyChanged(() => Message);
             }
         }
 
@@ -180,7 +192,7 @@ namespace VKM.Core.ViewModels
         {
             get { return new MvxCommand<string>((term) =>
             {
-                ListIsEmpty = false;
+                ShowMessage = false;
                 IsLoading = true;
                 _vkAudioService.Search(term, OnLoadingSuccess, OnLoadingError);
             });}
@@ -190,12 +202,18 @@ namespace VKM.Core.ViewModels
         {
             AudioList = resultAudios;
             IsLoading = false;
-            ListIsEmpty = AudioList.Count == 0;
+            if (AudioList.Count == 0)
+            {
+                ShowMessage = true;
+                Message = "Nothing found";
+            }
         }
 
         private void OnLoadingError(Exception error)
         {
             IsLoading = false;
+            ShowMessage = true;
+            Message = "Network error";
         }
 
         private void OnOptionsButtonClicked()

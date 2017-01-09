@@ -13,11 +13,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        local:MvxBind="Visibility Visibility(ListIsEmpty)"
+        local:MvxBind="Visibility Visibility(ShowMessage); Text Message"
         android:textSize="20dp"
         android:layout_gravity="center"
-        android:textColor="#fff"
-        android:text="Nothing found" />
+        android:textColor="#fff"/>
     <Mvx.MvxListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
