@@ -18,9 +18,7 @@ namespace VKM.Core.ViewModels
         {
             _playerService = playerService;
             _vkAudioService = vkAudioService;
-            ShowMessage = false;
-            IsLoading = true;
-            _vkAudioService.GetMyPlaylist(OnLoadingSuccess, OnLoadingError);
+            GetMyPlayList();
         }
         private List<Audio> _audioList;
         public List<Audio> AudioList
@@ -188,6 +186,8 @@ namespace VKM.Core.ViewModels
             }
         }
 
+        public MvxCommand GetMyAudioCommand => new MvxCommand(GetMyPlayList);
+
         public MvxCommand<string> SearchCommand
         {
             get { return new MvxCommand<string>((term) =>
@@ -214,6 +214,13 @@ namespace VKM.Core.ViewModels
             IsLoading = false;
             ShowMessage = true;
             Message = "Network error";
+        }
+
+        private void GetMyPlayList()
+        {
+            ShowMessage = false;
+            IsLoading = true;
+            _vkAudioService.GetMyPlaylist(OnLoadingSuccess, OnLoadingError);
         }
 
         private void OnOptionsButtonClicked()

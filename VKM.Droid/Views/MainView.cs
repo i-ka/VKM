@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using VKM.Core.ViewModels;
 
@@ -23,7 +24,7 @@ using SearchView = Android.Support.V7.Widget.SearchView;
 
 namespace VKM.Droid.Views
 {
-    [Activity(Label = "Main view",
+    [Activity(Label = "Мой плейлист",
         Theme = "@style/Theme.AppCompat")]
     class MainView : MvxAppCompatActivity<MainViewModel>, SearchView.IOnQueryTextListener
 
@@ -62,6 +63,10 @@ namespace VKM.Droid.Views
                 case Resource.Id.settings:
                     ViewModel?.OptionsButtonCommand.Execute();
                     return true;
+                case Resource.Id.home:
+                    ViewModel?.GetMyAudioCommand.Execute();
+                    Title = "Мой плейлист";
+                    return true;
                 default:
                     return base.OnOptionsItemSelected(item);
             }
@@ -91,7 +96,7 @@ namespace VKM.Droid.Views
         public bool OnQueryTextSubmit(string p0)
         {
             ViewModel?.SearchCommand.Execute(p0);
-            
+            Title = "Поиск";
             return true;
         }
     }
