@@ -21,5 +21,6 @@ namespace VKM.Core.Services
         void Stop();
         void SetSource(Audio audio);
         void Pause();
+        void Seek(long pos);
     }
 }

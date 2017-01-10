@@ -26,9 +26,11 @@ namespace VKM.Droid.Services
         public const string ActionStop = "com.vkm.player.action.stop";
         public const string ActionNext = "com.vkm.player.action.next";
         public const string ActionPrev = "com.vkm.player.action.prev";
+        public const string ActionSeek = "com.vkm.player.action.seek";
         public const string ActionSetSource = "com.vkm.player.action.setsource";
 
         public const string SourceValueName = "SOURCE";
+        public const string SeekPosValueName = "SEEK_POS";
 
         public static MediaPlayerService instance;
 
@@ -221,7 +223,7 @@ namespace VKM.Droid.Services
                     else {
                         _mediaController.GetTransportControls().Play();
                     }
-                    BuildNotification(GenerateAction(Resource.Mipmap.ic_pause_button, "Pause", ActionPause));
+                    BuildNotification(GenerateAction(Resource.Mipmap.ic_pause_button, "", ActionPause));
                     break;
                 case ActionPause:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
@@ -230,7 +232,7 @@ namespace VKM.Droid.Services
                     else {
                         _mediaController.GetTransportControls().Pause();
                     }
-                    BuildNotification(GenerateAction(Resource.Mipmap.ic_play_button, "Play", ActionPlay));
+                    BuildNotification(GenerateAction(Resource.Mipmap.ic_play_button, "", ActionPlay));
                     break;
                 case ActionStop:
                     if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
@@ -259,6 +261,9 @@ namespace VKM.Droid.Services
                case ActionSetSource:
                    _currentAudio = AudioInfo.UnPack(intent.GetStringExtra(SourceValueName));
                    break;
+                case ActionSeek:
+                    Seek(intent.GetIntExtra(SeekPosValueName, 0));
+                    break;
             }
             return StartCommandResult.Sticky;
         }
@@ -283,9 +288,10 @@ namespace VKM.Droid.Services
                 .SetContentText(_currentAudio.author)
                 .SetDeleteIntent(pendingIntent)
                 .SetStyle(style);
-            builder.AddAction(GenerateAction(Resource.Mipmap.ic_backward, "Previous", ActionPrev));
+            builder.AddAction(GenerateAction(Resource.Mipmap.ic_backward, "", ActionPrev));
             builder.AddAction(action);
-            builder.AddAction(GenerateAction(Resource.Mipmap.ic_forward, "Next", ActionNext));
+            builder.AddAction(GenerateAction(Resource.Mipmap.ic_forward, "", ActionNext));
+            //builder.AddAction(GenerateAction(Resource.Mipmap.ic_close, "", ActionStop));
             var notificationManager = (NotificationManager) GetSystemService(NotificationService);
             notificationManager.Notify(1, builder.Build());
         }

@@ -26,16 +26,21 @@ namespace VKM.Droid.Views
 {
     [Activity(Label = "Мой плейлист",
         Theme = "@style/Theme.AppCompat")]
-    class MainView : MvxAppCompatActivity<MainViewModel>, SearchView.IOnQueryTextListener
+    class MainView : MvxAppCompatActivity<MainViewModel>, SearchView.IOnQueryTextListener, SeekBar.IOnSeekBarChangeListener
 
     {
         private MediaPlayerService _player;
+
+        private SeekBar _seekBar;
+        private bool _seekPressed = false;
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.MainView);
             MediaPlayerService.OnInstanceCreated += SetupPlayer;
+            _seekBar = FindViewById<SeekBar>(Resource.Id.seekBar);
+            _seekBar.SetOnSeekBarChangeListener(this);
             if (MediaPlayerService.instance != null)
             {
                 SetupPlayer(MediaPlayerService.instance);
@@ -85,11 +90,16 @@ namespace VKM.Droid.Views
         void OnPlayerPositionChanged(long pos)
         {
             Console.WriteLine("Current position: " + pos.ToString());
+            _seekBar.Progress = (int) pos;
         }
 
         void OnDurationChanged(long duration)
         {
             Console.WriteLine("Current playback duration is:" + duration.ToString());
+            if (!_seekPressed)
+            {
+                _seekBar.Max = (int)duration;
+            }
         }
 
         public bool OnQueryTextChange(string p0)
@@ -102,6 +112,22 @@ namespace VKM.Droid.Views
             ViewModel?.SearchCommand.Execute(p0);
             Title = "Поиск";
             return true;
+        }
+
+        public void OnProgressChanged(SeekBar seekBar, int progress, bool fromUser)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void OnStartTrackingTouch(SeekBar seekBar)
+        {
+            _seekPressed = true;
+        }
+
+        public void OnStopTrackingTouch(SeekBar seekBar)
+        {
+            ViewModel.SeekCommand.Execute(seekBar.Progress);
+            _seekPressed = false;
         }
     }
 }

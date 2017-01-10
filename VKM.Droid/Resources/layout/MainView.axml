@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -16,10 +16,58 @@
         local:MvxBind="Visibility Visibility(ShowMessage); Text Message"
         android:textSize="20dp"
         android:layout_gravity="center"
-        android:textColor="#fff"/>
+        android:textColor="#fff" />
     <Mvx.MvxListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         local:MvxBind="ItemsSource AudioList; ItemClick SelectAudio; Visibility InvertedVisibility(IsLoading)"
         local:MvxItemTemplate="@layout/item_audio" />
-</LinearLayout>
+    <LinearLayout
+        orientation="horizontal"
+        android:background="#161616"
+        android:layout_height="70dp"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        local:MvxBind="Visibility Visibility(ShowPlayer)">
+        <ImageView
+            android:src="@mipmap/ic_backward"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            local:MvxBind="Click PrevCommand" />
+        <VKM.Droid.Controls.PlayStopButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            local:MvxBind="IsPlaying CurrentAudio.IsPlaying; Click PlayPauseCommand" />
+        <ImageView
+            android:src="@mipmap/ic_forward"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            local:MvxBind="Click NextCommand" />
+      <LinearLayout
+        android:orientation ="vertical"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          local:MvxBind="Text CurrentAudio.Name"
+          android:textSize="20dp"
+          android:textColor="#fff"
+          />
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          local:MvxBind="Text CurrentAudio.Author"
+          android:textSize="15dp"
+          android:textColor="#fff"
+          />
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:progress="0"
+            android:max="50"/>
+      </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

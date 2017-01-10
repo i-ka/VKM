@@ -74,6 +74,18 @@ namespace VKM.Core.ViewModels
             }
         }
 
+        private bool _showPlayer = false;
+
+        public bool ShowPlayer
+        {
+            get { return _showPlayer; }
+            private set
+            {
+                _showPlayer = value;
+                RaisePropertyChanged(() => ShowPlayer);
+            }
+        }
+
         private string _message;
 
         public string Message
@@ -118,6 +130,16 @@ namespace VKM.Core.ViewModels
                 });
             }
         }
+        public MvxCommand PlayPauseCommand => new MvxCommand(() =>
+        {
+            if (CurrentAudio != null && CurrentAudio.IsPlaying)
+            {
+                PauseCommand.Execute();
+            } else
+            {
+                PlayCommand.Execute();
+            }
+        });
         public MvxCommand PauseCommand => new MvxCommand(PausePlayer);
 
         public MvxCommand NextCommand
@@ -153,15 +175,21 @@ namespace VKM.Core.ViewModels
             }
         }
 
+        public MvxCommand<int> SeekCommand => new MvxCommand<int>((pos)=>{
+            _playerService.Seek(pos);
+            });
+
         private void StopPlayer()
         {
             if (_playerService.Status != VkmPlaybackState.NoMedia) {
+                ShowPlayer = false;
                 _playerService.Stop();
             }
         }
 
         private void StartPlayer()
         {
+            ShowPlayer = true;
             _playerService.Start();
         }
 
