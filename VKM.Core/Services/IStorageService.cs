@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VKM.Core.Services
 {
     public enum AudioSorting
     {
-        Date, Duration, None
+        Date,
+        Duration,
+        None
     }
+
     public interface IStorageService
     {
         string OAuthToken { get; set; }

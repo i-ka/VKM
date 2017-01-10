@@ -1,27 +1,70 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-
 using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using VKM.Core.Services;
 
 namespace VKM.Droid.Services
 {
-    class StorageService : IStorageService
+    internal class StorageService : IStorageService
     {
-        private ISharedPreferences _preferences;
+        private readonly ISharedPreferences _preferences;
 
         public StorageService()
         {
             _preferences = Application.Context.GetSharedPreferences(Application.Context.PackageName + ".Storage",
                 FileCreationMode.Private);
+        }
+
+        public string OAuthToken
+        {
+            get { return GetValue("VkmOAuthToken"); }
+            set { AddValue("VkmOAuthToken", value); }
+        }
+
+        public string RefreshToken
+        {
+            get { return GetValue("VkmRefreshToken"); }
+            set { AddValue("VkmRefreshToken", value); }
+        }
+
+        public DateTime TokenExpireTime
+        {
+            get
+            {
+                var result = GetValue("VkmTokenExpireTime");
+                return result != null ? DateTime.Parse(result) : new DateTime();
+            }
+            set { AddValue("VkmTokenExpireTime", value.ToString(CultureInfo.InvariantCulture)); }
+        }
+
+        public AudioSorting AudioSorting
+        {
+            get
+            {
+                var sortType = GetValue("VkmSorting");
+                if (sortType != null)
+                    return (AudioSorting) Enum.Parse(typeof(AudioSorting), GetValue("VkmSorting"));
+                return AudioSorting.None;
+            }
+            set { AddValue("VkmSorting", value.ToString()); }
+        }
+
+        public bool FiltersActive
+        {
+            get { return GetValue("VkmFiltersActive") == "True"; }
+            set { AddValue("VkmFiltersActive", value.ToString()); }
+        }
+
+        public string FilterString
+        {
+            get { return GetValue("VkmFilterString"); }
+            set { AddValue("VkmFilterString", value); }
+        }
+
+        public void Clear()
+        {
+            _preferences.Edit().Clear().Commit();
         }
 
         private void AddValue(string key, string value)
@@ -49,67 +92,6 @@ namespace VKM.Droid.Services
             var editor = _preferences.Edit();
             editor.Remove(key);
             editor.Commit();
-        }
-
-        public string OAuthToken
-        {
-            get { return GetValue("VkmOAuthToken"); }
-            set { AddValue("VkmOAuthToken", value); }
-        }
-
-        public string RefreshToken
-        {
-            get { return GetValue("VkmRefreshToken"); }
-            set { AddValue("VkmRefreshToken", value); }
-        }
-        public DateTime TokenExpireTime
-        {
-            get
-            {
-                var result = GetValue("VkmTokenExpireTime");
-                return result != null ? DateTime.Parse(result) : new DateTime();
-            }
-            set { AddValue("VkmTokenExpireTime", value.ToString(CultureInfo.InvariantCulture)); }
-        }
-
-        public AudioSorting AudioSorting
-        {
-            get
-            {
-                var sortType = GetValue("VkmSorting");
-                if (sortType != null)
-                {
-                    return (AudioSorting)Enum.Parse(typeof(AudioSorting), GetValue("VkmSorting"));
-                }
-                return AudioSorting.None;
-            }
-            set
-            {
-                AddValue("VkmSorting", value.ToString());
-            }
-        }
-
-        public bool FiltersActive
-        {
-            get { return GetValue("VkmFiltersActive") == "True"; }
-            set
-            {
-                AddValue("VkmFiltersActive", value.ToString());
-            }
-        }
-
-        public string FilterString
-        {
-            get { return GetValue("VkmFilterString"); }
-            set
-            {
-                AddValue("VkmFilterString", value);
-            }
-        }
-
-        public void Clear()
-        {
-            _preferences.Edit().Clear().Commit();
         }
     }
 }

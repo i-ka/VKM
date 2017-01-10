@@ -1,27 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using VKM.Core.Services;
 
 namespace VKM.Droid.Services
 {
-    class DroidPlayerService : IPlayerService
+    internal class DroidPlayerService : IPlayerService
     {
         public VkmPlaybackState Status
         {
             get
             {
-                if (MediaPlayerService.instance != null) {
-                    return MediaPlayerService.instance.State;
-                }
+                if (MediaPlayerService.instance != null) return MediaPlayerService.instance.State;
                 return VkmPlaybackState.NoMedia;
             }
         }
@@ -59,7 +48,7 @@ namespace VKM.Droid.Services
         {
             var intent = new Intent(Application.Context, typeof(MediaPlayerService));
             intent.SetAction(MediaPlayerService.ActionSeek);
-            intent.PutExtra(MediaPlayerService.SeekPosValueName, (int)pos);
+            intent.PutExtra(MediaPlayerService.SeekPosValueName, (int) pos);
             Application.Context.StartService(intent);
         }
     }

@@ -1,26 +1,30 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-
 using Android.App;
 using Android.Content;
-using Android.OS;
 using Android.Media;
 using Android.Media.Session;
-using Android.Runtime;
-using Android.Net.Wifi;
 using Android.Net;
+using Android.Net.Wifi;
+using Android.OS;
+using Android.Runtime;
 using Android.Support.V4.App;
 using VKM.Core.Services;
 
 namespace VKM.Droid.Services
 {
     [Service]
-    [IntentFilter(new[] { ActionPlay, ActionPause, ActionStop, ActionNext, ActionPrev, ActionSetSource })]
+    [IntentFilter(new[]{ ActionPlay, ActionPause, ActionStop, ActionNext, ActionPrev, ActionSetSource})]
     public class MediaPlayerService : Service, AudioManager.IOnAudioFocusChangeListener
     {
+        public delegate void OnInstanceListener(MediaPlayerService instance);
+
+        public delegate void PlaybackPositionListener(long currentPos);
+
+        public delegate void PlayerEventListener();
+
+        public delegate void PlayerPlaybackStateListner(VkmPlaybackState state);
+
         public const string ActionPlay = "com.vkm.player.action.play";
         public const string ActionPause = "com.vkm.player.action.pause";
         public const string ActionStop = "com.vkm.player.action.stop";
@@ -33,44 +37,31 @@ namespace VKM.Droid.Services
         public const string SeekPosValueName = "SEEK_POS";
 
         public static MediaPlayerService instance;
-
-        private MediaPlayer _player;
         private AudioInfo _currentAudio;
-        
-        private WifiManager.WifiLock _wifiLock;
+        private long _currPos;
+        private long _duration;
+        private MediaController _mediaController;
 
         private MediaSession _mediaSession;
-        private MediaController _mediaController;
 
         private Thread _playbackPosThread;
 
-        public delegate void OnInstanceListener(MediaPlayerService instance);
-        public delegate void PlayerEventListener();
-        public delegate void PlayerPlaybackStateListner(VkmPlaybackState state);
-        public delegate void PlaybackPositionListener(long currentPos);
-
-        public static event OnInstanceListener OnInstanceCreated;
-        public event PlayerEventListener OnNext;
-        public event PlayerEventListener OnPrev;
-        public event PlayerEventListener OnError;
-
-        public event PlayerPlaybackStateListner PlaybackStateChanged;
+        private MediaPlayer _player;
         private VkmPlaybackState _state = VkmPlaybackState.Stoped; //PlaybackState.NoMedia
-        public VkmPlaybackState State {
+
+        private WifiManager.WifiLock _wifiLock;
+
+        public VkmPlaybackState State
+        {
             get { return _state; }
             private set
             {
-                if (_state == value) {
-                    return;
-                }
+                if (_state == value) return;
                 _state = value;
                 PlaybackStateChanged(_state);
             }
         }
 
-
-        public event PlaybackPositionListener DurationChanged;
-        private long _duration;
         public long Duration
         {
             get { return _duration; }
@@ -82,18 +73,46 @@ namespace VKM.Droid.Services
             }
         }
 
-        public event PlaybackPositionListener PlaybackPositionChanged;
-        private long _currPos;
-        public long CurrentPosition {
-            get
+        public long CurrentPosition
+        {
+            get { return _currPos; }
+            set
             {
-                return _currPos;
-            }
-            set {
                 _currPos = value;
                 PlaybackPositionChanged(_currPos);
             }
         }
+
+        public void OnAudioFocusChange([GeneratedEnum] AudioFocus focusChange)
+        {
+            switch (focusChange)
+            {
+                case AudioFocus.Gain:
+                    _player.SetVolume(1.0f, 1.0f);
+                    break;
+                case AudioFocus.Loss:
+                    Stop();
+                    break;
+                case AudioFocus.LossTransient:
+                    Pause();
+                    break;
+                case AudioFocus.LossTransientCanDuck:
+                    _player.SetVolume(0.1f, 0.1f);
+                    break;
+            }
+        }
+
+        public static event OnInstanceListener OnInstanceCreated;
+        public event PlayerEventListener OnNext;
+        public event PlayerEventListener OnPrev;
+        public event PlayerEventListener OnError;
+
+        public event PlayerPlaybackStateListner PlaybackStateChanged;
+
+
+        public event PlaybackPositionListener DurationChanged;
+
+        public event PlaybackPositionListener PlaybackPositionChanged;
 
         public override void OnCreate()
         {
@@ -102,12 +121,14 @@ namespace VKM.Droid.Services
             _player = new MediaPlayer();
             _player.Prepared += OnPlayerPrepared;
             _player.Completion += (sender, e) => Next();
-            _player.Error += (sender, e) => {
+            _player.Error += (sender, e) =>
+            {
                 Stop();
                 OnError();
             };
             //int version = (int) Build.VERSION.SdkInt;
-            if (!(Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat)) {
+            if (!(Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat))
+            {
                 _mediaSession = new MediaSession(Application.Context, "VKM player");
                 _mediaController = new MediaController(Application.Context, _mediaSession.SessionToken);
                 var callback = new VkmMediaSessionCallBack();
@@ -123,7 +144,8 @@ namespace VKM.Droid.Services
 
         private void Pause()
         {
-            if (State == VkmPlaybackState.Playing) {
+            if (State == VkmPlaybackState.Playing)
+            {
                 _player.Pause();
                 State = VkmPlaybackState.Paused;
             }
@@ -131,12 +153,15 @@ namespace VKM.Droid.Services
 
         private void Play()
         {
-            if (State == VkmPlaybackState.Stoped) {
+            if (State == VkmPlaybackState.Stoped)
+            {
                 _player.SetAudioStreamType(Stream.Music);
                 _player.SetDataSource(_currentAudio.source);
                 _player.PrepareAsync();
                 State = VkmPlaybackState.Preparing;
-            } else if (State == VkmPlaybackState.Paused) {
+            }
+            else if (State == VkmPlaybackState.Paused)
+            {
                 _player.Start();
                 State = VkmPlaybackState.Playing;
             }
@@ -155,22 +180,16 @@ namespace VKM.Droid.Services
 
         private void Seek(long msPos)
         {
-            if (State == VkmPlaybackState.Paused || State == VkmPlaybackState.Playing) {
-                _player.SeekTo((int)msPos);
-            }
+            if (State == VkmPlaybackState.Paused || State == VkmPlaybackState.Playing) _player.SeekTo((int) msPos);
         }
 
         private void SetupPlaybackPosThread()
         {
             if (_playbackPosThread == null)
-            {
                 _playbackPosThread = new Thread(CheckPlaybackPos);
-            }
             if (_playbackPosThread.ThreadState == ThreadState.Stopped ||
                 _playbackPosThread.ThreadState == ThreadState.Unstarted)
-            {
                 _playbackPosThread.Start();
-            }
         }
 
         private void CheckPlaybackPos()
@@ -186,12 +205,15 @@ namespace VKM.Droid.Services
 
         private void Stop()
         {
-            if (State == VkmPlaybackState.Paused || State == VkmPlaybackState.Playing) {
+            if (State == VkmPlaybackState.Paused || State == VkmPlaybackState.Playing)
+            {
                 _player.Stop();
                 _player.Reset();
                 ReleaseWifiLock();
                 State = VkmPlaybackState.Stoped;
-            } else if (State == VkmPlaybackState.Preparing) {
+            }
+            else if (State == VkmPlaybackState.Preparing)
+            {
                 _player.Reset();
                 State = VkmPlaybackState.Stoped;
             }
@@ -213,54 +235,36 @@ namespace VKM.Droid.Services
         }
 
         [return: GeneratedEnum]
-        public override StartCommandResult OnStartCommand(Intent intent, [GeneratedEnum] StartCommandFlags flags, int startId)
+        public override StartCommandResult OnStartCommand(Intent intent, [GeneratedEnum] StartCommandFlags flags,
+            int startId)
         {
-            switch (intent.Action) {
+            switch (intent.Action)
+            {
                 case ActionPlay:
-                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
-                        Play();
-                    }
-                    else {
-                        _mediaController.GetTransportControls().Play();
-                    }
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) Play();
+                    else _mediaController.GetTransportControls().Play();
                     BuildNotification(GenerateAction(Resource.Mipmap.ic_pause_button, "", ActionPause));
                     break;
                 case ActionPause:
-                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
-                        Pause();
-                    }
-                    else {
-                        _mediaController.GetTransportControls().Pause();
-                    }
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) Pause();
+                    else _mediaController.GetTransportControls().Pause();
                     BuildNotification(GenerateAction(Resource.Mipmap.ic_play_button, "", ActionPlay));
                     break;
                 case ActionStop:
-                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
-                        Stop();
-                    }
-                    else {
-                        _mediaController.GetTransportControls().Stop();
-                    }
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) Stop();
+                    else _mediaController.GetTransportControls().Stop();
                     break;
                 case ActionPrev:
-                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
-                        Prev();
-                    }
-                    else {
-                        _mediaController.GetTransportControls().SkipToPrevious();
-                    }
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) Prev();
+                    else _mediaController.GetTransportControls().SkipToPrevious();
                     break;
                 case ActionNext:
-                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) {
-                        Next();
-                    }
-                    else {
-                        _mediaController.GetTransportControls().SkipToNext();
-                    }
+                    if (Build.VERSION.SdkInt <= BuildVersionCodes.Kitkat) Next();
+                    else _mediaController.GetTransportControls().SkipToNext();
                     break;
-               case ActionSetSource:
-                   _currentAudio = AudioInfo.UnPack(intent.GetStringExtra(SourceValueName));
-                   break;
+                case ActionSetSource:
+                    _currentAudio = AudioInfo.UnPack(intent.GetStringExtra(SourceValueName));
+                    break;
                 case ActionSeek:
                     Seek(intent.GetIntExtra(SeekPosValueName, 0));
                     break;
@@ -273,7 +277,7 @@ namespace VKM.Droid.Services
             var intent = new Intent(Application.Context, typeof(MediaPlayerService));
             intent.SetAction(intentAction);
             var pendingIntent = PendingIntent.GetService(Application.Context, 1, intent, 0);
-            return new NotificationCompat.Action.Builder( icon, title, pendingIntent ).Build();
+            return new NotificationCompat.Action.Builder(icon, title, pendingIntent).Build();
         }
 
         private void BuildNotification(NotificationCompat.Action action)
@@ -281,7 +285,7 @@ namespace VKM.Droid.Services
             var style = new Android.Support.V7.App.NotificationCompat.MediaStyle();
             var intent = new Intent(Application.Context, typeof(MediaPlayerService));
             intent.SetAction(ActionStop);
-            PendingIntent pendingIntent = PendingIntent.GetService(Application.Context, 1, intent, 0);
+            var pendingIntent = PendingIntent.GetService(Application.Context, 1, intent, 0);
             var builder = new NotificationCompat.Builder(this)
                 .SetSmallIcon(Resource.Mipmap.Icon)
                 .SetContentTitle(_currentAudio.name)
@@ -298,49 +302,27 @@ namespace VKM.Droid.Services
 
         private void AquireWifiLock()
         {
-            WifiManager wifiManager = Application.Context.GetSystemService(Context.WifiService) as WifiManager;
-            if (_wifiLock == null) {
-                _wifiLock = wifiManager.CreateWifiLock(WifiMode.Full, "xamarin_wifi_lock");
-            }
+            var wifiManager = Application.Context.GetSystemService(WifiService) as WifiManager;
+            if (_wifiLock == null) _wifiLock = wifiManager.CreateWifiLock(WifiMode.Full, "xamarin_wifi_lock");
             _wifiLock.Acquire();
         }
 
         private void ReleaseWifiLock()
         {
-            if (_wifiLock == null) {
-                return;
-            }
+            if (_wifiLock == null) return;
             _wifiLock.Release();
             _wifiLock = null;
         }
-
-        public void OnAudioFocusChange([GeneratedEnum] AudioFocus focusChange)
-        {
-            switch (focusChange) {
-                case AudioFocus.Gain:
-                    _player.SetVolume(1.0f, 1.0f);
-                    break;
-                case AudioFocus.Loss:
-                    Stop();
-                    break;
-                case AudioFocus.LossTransient:
-                    Pause();
-                    break;
-                case AudioFocus.LossTransientCanDuck:
-                    _player.SetVolume(0.1f, 0.1f);
-                    break;
-            }
-        }
     }
 
-    class VkmMediaSessionCallBack : MediaSession.Callback
+    internal class VkmMediaSessionCallBack : MediaSession.Callback
     {
-        public Action OnPlayImpl;
         public Action OnPauseImpl;
-        public Action OnStopImpl;
+        public Action OnPlayImpl;
+        public Action<long> OnSeekToImpl;
         public Action OnSkipToNextImpl;
         public Action OnSkipToPreviousImpl;
-        public Action<long> OnSeekToImpl;
+        public Action OnStopImpl;
 
         public override void OnPlay()
         {

@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using MvvmCross.Platform;
-using MvvmCross.Platform.Platform;
 using VKM.Core.JsonClasses;
 
 namespace VKM.Core.Services
 {
-    class VkAudioService : IVkAudioService
+    internal class VkAudioService : IVkAudioService
     {
         private const string ApiKey = "seIF0hkkjLPlGwHkWvVIkpP9ZfbeSQub";
         private const string ClientSecret = "WkF1h5BxtwoybDEeykOs0nRclZAwxnDM";
@@ -22,7 +15,7 @@ namespace VKM.Core.Services
         private const string PasswordLoginRequestType = "password";
 
         private readonly IRestApiService _restApi;
-        private IStorageService _storage;
+        private readonly IStorageService _storage;
 
         public VkAudioService(IRestApiService restApi, IStorageService storage)
         {
@@ -46,18 +39,16 @@ namespace VKM.Core.Services
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            var searchUrl = $"{ApiUrl}/tracks?q={searchTerm.Replace(' ', '+')}&client_id={ApiKey}{(orderBy != null ? $"&order={orderBy}" : "")}";
+            var searchUrl =
+                $"{ApiUrl}/tracks?q={searchTerm.Replace(' ', '+')}&client_id={ApiKey}{(orderBy != null ? $"&order={orderBy}" : "")}";
             _restApi.MakeRequest<List<Track>>(searchUrl, "GET", "",
                 result =>
                 {
                     var audioList = result.Where(tr => tr.streamable);
                     if (_storage.FiltersActive)
-                    {
                         if (string.IsNullOrWhiteSpace(_storage.FilterString))
-                        {
-                            audioList = audioList.Where((tr) => !tr.title.ToLower().Contains(_storage.FilterString.ToLower()));
-                        }
-                    }
+                            audioList =
+                                audioList.Where(tr => !tr.title.ToLower().Contains(_storage.FilterString.ToLower()));
                     var selectedList = audioList.Select(tr =>
                     {
                         var streamUrl = tr.stream_url + "?client_id=" + ApiKey;
@@ -68,12 +59,8 @@ namespace VKM.Core.Services
                 error => errorAction?.Invoke(error));
         }
 
-        private bool TokenExpired()
-        {
-            return DateTime.Now >= _storage.TokenExpireTime;
-        }
-
-        public void Login(string login = null, string password = null , Action authSuccessAction = null, Action<Exception> authFailureAction = null)
+        public void Login(string login = null, string password = null, Action authSuccessAction = null,
+            Action<Exception> authFailureAction = null)
         {
             if (!TokenExpired())
             {
@@ -83,11 +70,13 @@ namespace VKM.Core.Services
             string postData;
             if (_storage.RefreshToken != null)
             {
-                postData = $"client_id={ApiKey}&client_secret={ClientSecret}&grant_type={RefreshRequestType}&refresh_token={_storage.RefreshToken}";
+                postData =
+                    $"client_id={ApiKey}&client_secret={ClientSecret}&grant_type={RefreshRequestType}&refresh_token={_storage.RefreshToken}";
             }
             else if (login != null && password != null)
             {
-                postData = $"client_id={ApiKey}&client_secret={ClientSecret}&grant_type={PasswordLoginRequestType}&username={login}&password={password}";
+                postData =
+                    $"client_id={ApiKey}&client_secret={ClientSecret}&grant_type={PasswordLoginRequestType}&username={login}&password={password}";
             }
             else
             {
@@ -120,15 +109,18 @@ namespace VKM.Core.Services
                 {
                     var audioList = new List<Audio>();
                     foreach (var pl in result)
-                    {
-                        audioList.AddRange(from tr in pl.tracks where tr.streamable let streamUrl = tr.stream_url + "?client_id=" + ApiKey select new Audio(tr.id, tr.user.username, tr.title, tr.duration, streamUrl));
-                    }
+                        audioList.AddRange(from tr in pl.tracks
+                            where tr.streamable
+                            let streamUrl = tr.stream_url + "?client_id=" + ApiKey
+                            select new Audio(tr.id, tr.user.username, tr.title, tr.duration, streamUrl));
                     succesAction(audioList);
                 },
-                error =>
-                {
-                    errorAction?.Invoke(error);
-                });
+                error => { errorAction?.Invoke(error); });
+        }
+
+        private bool TokenExpired()
+        {
+            return DateTime.Now >= _storage.TokenExpireTime;
         }
     }
 }

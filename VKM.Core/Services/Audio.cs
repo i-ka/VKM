@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MvvmCross.Core.ViewModels;
+﻿using MvvmCross.Core.ViewModels;
 
 namespace VKM.Core.Services
 {
     public class Audio : MvxViewModel
     {
-        private AudioInfo _audioInfo = new AudioInfo();
+        private bool _isPlaying;
+
         public Audio(int id, string author, string name, int duration, string source = "")
         {
             Id = id;
@@ -19,64 +15,61 @@ namespace VKM.Core.Services
             Source = source;
             IsPlaying = false;
         }
-        public AudioInfo AudioInfo { get { return _audioInfo; } }
+
+        public AudioInfo AudioInfo { get; } = new AudioInfo();
 
         public int Id
         {
-            get { return _audioInfo.id; }
+            get { return AudioInfo.id; }
             set
             {
-                _audioInfo.id = value;
+                AudioInfo.id = value;
                 RaisePropertyChanged(() => Id);
             }
         }
 
-        public string Source {
-            get
-            {
-               return _audioInfo.source;
-            }
+        public string Source
+        {
+            get { return AudioInfo.source; }
             private set
             {
-                _audioInfo.source = value;
+                AudioInfo.source = value;
                 RaisePropertyChanged(() => Source);
             }
         }
-        public string Author {
-            get
-            {
-                return _audioInfo.author;
-            }
+
+        public string Author
+        {
+            get { return AudioInfo.author; }
             private set
             {
-                _audioInfo.author = value;
+                AudioInfo.author = value;
                 RaisePropertyChanged(() => Author);
             }
         }
-        public string Name {
-            get
-            {
-                return _audioInfo.name;
-            }
+
+        public string Name
+        {
+            get { return AudioInfo.name; }
             set
             {
-                _audioInfo.name = value;
+                AudioInfo.name = value;
                 RaisePropertyChanged(() => Name);
             }
         }
-        public int Duration {
-            get
-            {
-                return _audioInfo.duration;
-            }
+
+        public int Duration
+        {
+            get { return AudioInfo.duration; }
             private set
             {
-                _audioInfo.duration = value;
+                AudioInfo.duration = value;
                 RaisePropertyChanged(() => Duration);
             }
         }
-        private bool _isPlaying;
-        public bool IsPlaying {
+
+        public bool IsPlaying
+        {
             get { return _isPlaying; }
             set
             {

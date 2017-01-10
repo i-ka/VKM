@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using MvvmCross.Platform;
 using MvvmCross.Platform.Platform;
 
 namespace VKM.Core.Services
 {
-    class RestApiService :IRestApiService
+    internal class RestApiService : IRestApiService
     {
         private readonly IMvxJsonConverter _jsonConverter;
+
         public RestApiService(IMvxJsonConverter jsonConverter)
         {
             _jsonConverter = jsonConverter;
@@ -21,13 +18,14 @@ namespace VKM.Core.Services
         public void MakeRequest<T>(string url, string verb, string postData, Action<T> successAction,
             Action<Exception> errAction)
         {
-            var request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest) WebRequest.Create(url);
             request.Method = verb;
             request.Accept = "application/json";
-            if (postData != "" && verb == "POST") {
+            if (postData != "" && verb == "POST")
+            {
                 //Mvx.Warning(postData);
                 request.ContentType = "application/x-www-form-urlencoded";
-                request.BeginGetRequestStream((tocken) =>
+                request.BeginGetRequestStream(tocken =>
                 {
                     Stream reqStream = null;
                     try
@@ -58,10 +56,12 @@ namespace VKM.Core.Services
                 response =>
                 {
                     T retVal;
-                    try {
+                    try
+                    {
                         retVal = Desirealize<T>(response);
                     }
-                    catch (Exception ex) {
+                    catch (Exception ex)
+                    {
                         errAction(ex);
                         return;
                     }
@@ -74,16 +74,21 @@ namespace VKM.Core.Services
         {
             request.BeginGetResponse(token =>
             {
-                try {
-                    using (var response = request.EndGetResponse(token)) {
-                        using (var stream = response.GetResponseStream()) {
+                try
+                {
+                    using (var response = request.EndGetResponse(token))
+                    {
+                        using (var stream = response.GetResponseStream())
+                        {
                             var reader = new StreamReader(stream);
                             successAction(reader.ReadToEnd());
                         }
                     }
                 }
-                catch (Exception e) {
-                    Mvx.Error("Error: '{0}' when making {1} request to {2}", e.Message, request.Method, request.RequestUri);
+                catch (Exception e)
+                {
+                    Mvx.Error("Error: '{0}' when making {1} request to {2}", e.Message, request.Method,
+                        request.RequestUri);
                     errAction(e);
                 }
             }, null);

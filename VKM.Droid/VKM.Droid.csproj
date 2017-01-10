@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>VKM.Droid</RootNamespace>
     <AssemblyName>VKM.Droid</AssemblyName>
-    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
     <AndroidApplication>True</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
@@ -78,10 +78,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
-    <Reference Include="Mono.Android.Export" />
     <Reference Include="MvvmCross.Core">
       <HintPath>..\packages\MvvmCross.Core.4.3.0\lib\MonoAndroid\MvvmCross.Core.dll</HintPath>
     </Reference>

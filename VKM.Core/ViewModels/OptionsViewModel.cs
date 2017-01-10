@@ -1,35 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using MvvmCross.Core.ViewModels;
 using VKM.Core.Services;
 
 namespace VKM.Core.ViewModels
 {
-    class OptionsViewModel : 
+    internal class OptionsViewModel :
         MvxViewModel
     {
-        private IStorageService _srtorage;
-        private IPlayerService _player;
+        private List<AudioSorting> _list = new List<AudioSorting>
+        {
+            AudioSorting.Date,
+            AudioSorting.Duration,
+            AudioSorting.None
+        };
+
+        private readonly IPlayerService _player;
+        private readonly IStorageService _srtorage;
 
         public OptionsViewModel(IStorageService storage, IPlayerService player)
         {
             _srtorage = storage;
             _player = player;
         }
-        private List<AudioSorting> _list = new List<AudioSorting>()
-            {
-                AudioSorting.Date,
-                AudioSorting.Duration,
-                AudioSorting.None
-            };
 
         public List<AudioSorting> List
         {
             get { return _list; }
-            set { _list = value; RaisePropertyChanged(() => List); }
+            set
+            {
+                _list = value;
+                RaisePropertyChanged(() => List);
+            }
         }
 
         public bool FiterActive
@@ -41,6 +42,7 @@ namespace VKM.Core.ViewModels
                 RaisePropertyChanged(() => FiterActive);
             }
         }
+
         public string FilterString
         {
             get { return _srtorage.FilterString; }
@@ -50,6 +52,7 @@ namespace VKM.Core.ViewModels
                 RaisePropertyChanged(() => FilterString);
             }
         }
+
         public AudioSorting CurrentAudioSorting
         {
             get { return _srtorage.AudioSorting; }
